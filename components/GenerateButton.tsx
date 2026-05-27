@@ -7,27 +7,27 @@ interface GenerateButtonProps {
   onClick: () => void;
   loading: boolean;
   disabled?: boolean;
+  label?: string;
 }
 
-export function GenerateButton({ onClick, loading, disabled }: GenerateButtonProps) {
+export function GenerateButton({ onClick, loading, disabled, label }: GenerateButtonProps) {
   return (
-    <Button
+    <button
       onClick={onClick}
       disabled={loading || disabled}
-      className="w-full h-12 text-base font-semibold"
-      size="lg"
+      className="w-full h-12 text-base font-semibold rounded-xl btn-brand disabled:opacity-50 disabled:cursor-not-allowed disabled:filter-none disabled:shadow-none flex items-center justify-center gap-2"
     >
       {loading ? (
         <>
           <Loader2 className="h-5 w-5 animate-spin" />
-          AI 正在创作中...
+          <span className="animate-pulse">AI 正在创作中...</span>
         </>
       ) : (
         <>
           <Sparkles className="h-5 w-5" />
-          生成画作 (-3积分)
+          {label || "开始创作 · 3积分"}
         </>
       )}
-    </Button>
+    </button>
   );
 }

@@ -1,14 +1,26 @@
 "use client";
 
-import { Tldraw } from "@tldraw/tldraw";
-import "@tldraw/tldraw/tldraw.css";
+import dynamic from "next/dynamic";
 import { useCallback, useRef, useState } from "react";
+import { Camera, Trash2, Check } from "lucide-react";
+import "tldraw/tldraw.css";
+
+const Tldraw = dynamic(() => import("tldraw").then((mod) => mod.Tldraw), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-violet-50 via-white to-indigo-50 dark:from-violet-950/30 dark:via-black/30 dark:to-indigo-950/30 gap-3">
+      <div className="animate-spin h-10 w-10 border-[3px] border-violet-500 border-t-transparent rounded-full" />
+      <span className="text-sm text-muted-foreground">画布加载中...</span>
+    </div>
+  ),
+});
 
 interface CanvasPanelProps {
   onExport?: (base64: string) => void;
+  hasSketch?: boolean;
 }
 
-export function CanvasPanel({ onExport }: CanvasPanelProps) {
+export function CanvasPanel({ onExport, hasSketch }: CanvasPanelProps) {
   const editorRef = useRef<any>(null);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -21,11 +33,9 @@ export function CanvasPanel({ onExport }: CanvasPanelProps) {
     setIsExporting(true);
 
     try {
-      // Get the current shapes as an SVG, then convert to PNG
       const svgString = await editorRef.current.getSvgString();
       if (!svgString) return;
 
-      // Create a canvas to render the SVG to PNG
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
@@ -38,15 +48,10 @@ export function CanvasPanel({ onExport }: CanvasPanelProps) {
       const url = URL.createObjectURL(blob);
 
       img.onload = () => {
-        // White background
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Draw the SVG centered
-        const scale = Math.min(
-          canvas.width / img.width,
-          canvas.height / img.height
-        );
+        const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
         const x = (canvas.width - img.width * scale) / 2;
         const y = (canvas.height - img.height * scale) / 2;
         ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
@@ -69,23 +74,52 @@ export function CanvasPanel({ onExport }: CanvasPanelProps) {
     }
   }, [isExporting, onExport]);
 
+  const handleClear = useCallback(async () => {
+    if (!editorRef.current) return;
+    try {
+      const editor = editorRef.current;
+      const allShapes = editor.getCurrentPageShapeIds();
+      if (allShapes.size > 0) {
+        editor.deleteShapes([...allShapes]);
+      }
+    } catch (err) {
+      console.error("Clear failed:", err);
+    }
+  }, []);
+
   return (
-    <div className="relative w-full h-full rounded-xl overflow-hidden border bg-white">
-      <div className="absolute top-3 right-3 z-[1000]">
-        <button
-          onClick={handleExport}
-          disabled={isExporting}
-          className="px-3 py-1.5 text-xs font-medium rounded-lg bg-primary text-primary-foreground shadow-md hover:bg-primary/90 transition disabled:opacity-50"
-        >
-          {isExporting ? "导出中..." : "📷 导出草图"}
-        </button>
-      </div>
+    <div className="relative w-full h-full">
       <Tldraw
         onMount={handleMount}
-        options={{
-          maxPages: 1,
-        }}
+        options={{ maxPages: 1 }}
       />
+
+      {/* Floating action bar - bottom center */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1001]">
+        <div className="flex items-center gap-2 px-3 py-2 rounded-2xl shadow-lg border border-border/50 glass-panel">
+          <button
+            onClick={handleExport}
+            disabled={isExporting}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl bg-gradient-to-r from-violet-500 to-indigo-600 text-white shadow-sm hover:shadow-md hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {hasSketch ? (
+              <><Check className="w-3.5 h-3.5" /> 已就绪</>
+            ) : isExporting ? (
+              <><div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" /> 导出中</>
+            ) : (
+              <><Camera className="w-3.5 h-3.5" /> 导出草图</>
+            )}
+          </button>
+          <div className="w-px h-6 bg-border/50" />
+          <button
+            onClick={handleClear}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            清空
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

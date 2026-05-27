@@ -49,7 +49,6 @@ export default function SignUpPage() {
       }
 
       toast.success("注册成功！正在登录...");
-      // Auto sign in
       const signInRes = await signIn("credentials", {
         email: email.toLowerCase(),
         password,
@@ -69,20 +68,20 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-violet-50 via-blue-50 to-pink-50 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-violet-100 via-blue-50 to-indigo-100 dark:from-violet-950/30 dark:via-zinc-950 dark:to-indigo-950/30 px-4">
+      <Card className="w-full max-w-md border-border/50 shadow-xl shadow-violet-500/5">
+        <CardHeader className="text-center pb-2">
           <div className="flex justify-center mb-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
               <Sparkles className="h-6 w-6 text-white" />
             </div>
           </div>
-          <CardTitle className="text-2xl">创建账户</CardTitle>
-          <CardDescription>注册 SketchToArt，开始你的 AI 艺术之旅</CardDescription>
+          <CardTitle className="text-2xl font-bold">创建账户</CardTitle>
+          <CardDescription>开始你的 AI 艺术之旅，注册即送 50 积分</CardDescription>
         </CardHeader>
 
         <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-2">
             <div className="space-y-2">
               <Label htmlFor="name">昵称</Label>
               <Input
@@ -90,6 +89,7 @@ export default function SignUpPage() {
                 placeholder="你的昵称"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                className="rounded-xl focus:ring-primary/50"
                 required
               />
             </div>
@@ -101,6 +101,7 @@ export default function SignUpPage() {
                 placeholder="your@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="rounded-xl focus:ring-primary/50"
                 required
               />
             </div>
@@ -112,6 +113,7 @@ export default function SignUpPage() {
                 placeholder="至少6位密码"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="rounded-xl focus:ring-primary/50"
                 required
               />
             </div>
@@ -123,18 +125,19 @@ export default function SignUpPage() {
                 placeholder="再次输入密码"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                className="rounded-xl focus:ring-primary/50"
                 required
               />
             </div>
           </CardContent>
 
           <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full btn-brand rounded-xl h-11" disabled={loading}>
               {loading ? "注册中..." : "注册"}
             </Button>
             <p className="text-sm text-muted-foreground">
               已有账户？{" "}
-              <Link href="/signin" className="text-primary hover:underline">
+              <Link href="/signin" className="text-primary font-medium hover:underline">
                 立即登录
               </Link>
             </p>

@@ -8,7 +8,7 @@ import { ArtworkCard } from "@/components/ArtworkCard";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
 import { toast } from "sonner";
-import { ImageIcon, Plus, Coins, Loader2 } from "lucide-react";
+import { ImageIcon, Plus, Coins, Loader2, Calendar, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 interface Artwork {
@@ -27,6 +27,7 @@ export default function DashboardPage() {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [credits, setCredits] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [dailyClaimed, setDailyClaimed] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
@@ -75,6 +76,7 @@ export default function DashboardPage() {
   };
 
   const handleDailyBonus = async () => {
+    if (dailyClaimed) return;
     try {
       const res = await fetch("/api/credits", {
         method: "POST",
@@ -84,53 +86,75 @@ export default function DashboardPage() {
       if (res.ok) {
         const data = await res.json();
         setCredits((prev) => (prev ?? 0) + data.added);
-        toast.success(`+${data.added} 积分！`);
+        setDailyClaimed(true);
+        toast.success(`🎁 +${data.added} 积分！`);
       }
     } catch {
       toast.error("领取失败");
     }
   };
 
+  // Stats
+  const thisMonth = artworks.filter(a => {
+    const d = new Date(a.createdAt);
+    const now = new Date();
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  });
+
   if (status === "loading" || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-muted/30">
+    <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-2xl font-bold">我的作品</h1>
-            <p className="text-muted-foreground mt-1">
-              管理你创作的所有 AI 画作
-            </p>
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+        {/* Stats cards */}
+        <div className="grid grid-cols-3 gap-3 lg:gap-4 mb-8">
+          <div className="p-4 lg:p-5 rounded-2xl bg-gradient-to-br from-violet-50 to-indigo-50 dark:from-violet-950/30 dark:to-indigo-950/30 border border-violet-100 dark:border-violet-900/40">
+            <div className="flex items-center gap-2 mb-1.5">
+              <ImageIcon className="h-4 w-4 text-violet-500" />
+              <span className="text-xs font-medium text-muted-foreground">总作品</span>
+            </div>
+            <p className="text-2xl lg:text-3xl font-bold">{artworks.length}</p>
           </div>
+          <div className="p-4 lg:p-5 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border border-amber-100 dark:border-amber-900/40">
+            <div className="flex items-center gap-2 mb-1.5">
+              <Coins className="h-4 w-4 text-amber-500" />
+              <span className="text-xs font-medium text-muted-foreground">剩余积分</span>
+            </div>
+            <p className="text-2xl lg:text-3xl font-bold text-amber-700 dark:text-amber-400">{credits ?? 0}</p>
+          </div>
+          <div className="p-4 lg:p-5 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 border border-emerald-100 dark:border-emerald-900/40">
+            <div className="flex items-center gap-2 mb-1.5">
+              <Calendar className="h-4 w-4 text-emerald-500" />
+              <span className="text-xs font-medium text-muted-foreground">本月创作</span>
+            </div>
+            <p className="text-2xl lg:text-3xl font-bold">{thisMonth.length}</p>
+          </div>
+        </div>
 
-          <div className="flex items-center gap-3">
-            {credits !== null && (
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200">
-                <Coins className="h-4 w-4 text-amber-500" />
-                <span className="text-sm font-medium">{credits} 积分</span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleDailyBonus}
-                  className="text-xs text-amber-600 hover:text-amber-700 h-auto p-1"
-                >
-                  每日签到 +10
-                </Button>
-              </div>
+        {/* Header row */}
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-xl lg:text-2xl font-bold">我的作品</h1>
+          <div className="flex items-center gap-2">
+            {!dailyClaimed && (
+              <button
+                onClick={handleDailyBonus}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 text-white text-xs font-semibold hover:from-amber-500 hover:to-orange-500 transition-all shadow-sm hover:shadow-md"
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                每日签到 +10
+              </button>
             )}
             <Link href="/create">
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
+              <Button size="sm" className="btn-brand">
+                <Plus className="h-4 w-4 mr-1" />
                 新建创作
               </Button>
             </Link>
@@ -139,23 +163,23 @@ export default function DashboardPage() {
 
         {/* Gallery */}
         {artworks.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
-              <ImageIcon className="h-8 w-8 text-muted-foreground" />
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-violet-100 via-indigo-100 to-purple-100 dark:from-violet-950/40 dark:via-indigo-950/40 dark:to-purple-950/40 flex items-center justify-center mb-5">
+              <ImageIcon className="h-9 w-9 text-violet-400" />
             </div>
-            <h3 className="font-semibold text-lg mb-2">还没有作品</h3>
-            <p className="text-muted-foreground mb-6">
-              开始你的第一次 AI 艺术创作吧
+            <h3 className="text-lg font-bold mb-2">还没有作品</h3>
+            <p className="text-sm text-muted-foreground mb-6 max-w-sm">
+              在画布上绘制草图，选择你喜欢的风格，<br />AI 将为你生成精美的画作
             </p>
             <Link href="/create">
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
+              <Button className="btn-brand">
+                <Sparkles className="h-4 w-4 mr-2" />
                 开始创作
               </Button>
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 lg:gap-4">
             {artworks.map((artwork) => (
               <ArtworkCard
                 key={artwork.id}

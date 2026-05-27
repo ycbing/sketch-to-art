@@ -46,20 +46,20 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-violet-50 via-blue-50 to-pink-50 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-violet-100 via-blue-50 to-indigo-100 dark:from-violet-950/30 dark:via-zinc-950 dark:to-indigo-950/30 px-4">
+      <Card className="w-full max-w-md border-border/50 shadow-xl shadow-violet-500/5">
+        <CardHeader className="text-center pb-2">
           <div className="flex justify-center mb-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
               <Sparkles className="h-6 w-6 text-white" />
             </div>
           </div>
-          <CardTitle className="text-2xl">欢迎回来</CardTitle>
+          <CardTitle className="text-2xl font-bold">欢迎回来</CardTitle>
           <CardDescription>登录你的 SketchToArt 账户</CardDescription>
         </CardHeader>
 
         <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-2">
             <div className="space-y-2">
               <Label htmlFor="email">邮箱</Label>
               <Input
@@ -68,6 +68,7 @@ export default function SignInPage() {
                 placeholder="your@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="rounded-xl focus:ring-primary/50"
                 required
               />
             </div>
@@ -79,18 +80,19 @@ export default function SignInPage() {
                 placeholder="输入密码"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="rounded-xl focus:ring-primary/50"
                 required
               />
             </div>
           </CardContent>
 
           <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full btn-brand rounded-xl h-11" disabled={loading}>
               {loading ? "登录中..." : "登录"}
             </Button>
             <p className="text-sm text-muted-foreground">
               还没有账户？{" "}
-              <Link href="/signup" className="text-primary hover:underline">
+              <Link href="/signup" className="text-primary font-medium hover:underline">
                 免费注册
               </Link>
             </p>
