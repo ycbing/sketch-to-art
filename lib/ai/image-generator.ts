@@ -79,11 +79,4 @@ export async function generateImage(opts: {
   return generateFromText(`${opts.stylePrompt}. ${opts.prompt}`, opts.size);
 }
 
-/**
- * Download an image URL to a Buffer
- */
-export async function downloadImage(url: string): Promise<Buffer> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed to download image: ${res.status}`);
-  return Buffer.from(await res.arrayBuffer());
-}
+

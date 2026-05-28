@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useRef, useState } from "react";
+import type { Editor } from "tldraw";
 import { Camera, Trash2, Check } from "lucide-react";
 import "tldraw/tldraw.css";
 
@@ -21,10 +22,10 @@ interface CanvasPanelProps {
 }
 
 export function CanvasPanel({ onExport, hasSketch }: CanvasPanelProps) {
-  const editorRef = useRef<any>(null);
+  const editorRef = useRef<Editor | null>(null);
   const [isExporting, setIsExporting] = useState(false);
 
-  const handleMount = useCallback((editor: any) => {
+  const handleMount = useCallback((editor: Editor) => {
     editorRef.current = editor;
   }, []);
 

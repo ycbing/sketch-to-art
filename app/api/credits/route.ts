@@ -22,6 +22,8 @@ export async function GET() {
       return NextResponse.json({ error: "用户不存在" }, { status: 404 });
     }
 
+    const user = userRows[0];
+
     const recentUsage = await db
       .select()
       .from(creditsUsage)
@@ -29,9 +31,21 @@ export async function GET() {
       .orderBy(desc(creditsUsage.createdAt))
       .limit(20);
 
+    const canClaimDailyBonus = (() => {
+      if (!user.lastDailyBonusAt) return true;
+      const last = new Date(user.lastDailyBonusAt);
+      const now = new Date();
+      return (
+        last.getUTCFullYear() !== now.getUTCFullYear() ||
+        last.getUTCMonth() !== now.getUTCMonth() ||
+        last.getUTCDate() !== now.getUTCDate()
+      );
+    })();
+
     return NextResponse.json({
-      credits: userRows[0].credits ?? 0,
+      credits: user.credits ?? 0,
       recentUsage,
+      canClaimDailyBonus,
     });
   } catch (error) {
     console.error("Get credits error:", error);
@@ -51,13 +65,52 @@ export async function POST(request: NextRequest) {
     const { action, amount } = body;
 
     if (action === "daily_bonus") {
-      // Add 10 credits as daily bonus
+      const BONUS_AMOUNT = 10;
+
+      const userRows = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, session.user.id))
+        .limit(1);
+
+      if (!userRows.length) {
+        return NextResponse.json({ error: "用户不存在" }, { status: 404 });
+      }
+
+      const user = userRows[0];
+
+      if (user.lastDailyBonusAt) {
+        const last = new Date(user.lastDailyBonusAt);
+        const now = new Date();
+        const sameDay =
+          last.getUTCFullYear() === now.getUTCFullYear() &&
+          last.getUTCMonth() === now.getUTCMonth() &&
+          last.getUTCDate() === now.getUTCDate();
+
+        if (sameDay) {
+          return NextResponse.json(
+            { error: "今日已领取签到奖励", canClaimDailyBonus: false },
+            { status: 400 }
+          );
+        }
+      }
+
       await db
         .update(users)
-        .set({ credits: sql`${users.credits} + 10` })
+        .set({
+          credits: sql`${users.credits} + ${BONUS_AMOUNT}`,
+          lastDailyBonusAt: new Date(),
+        })
         .where(eq(users.id, session.user.id));
 
-      return NextResponse.json({ success: true, added: 10 });
+      await db.insert(creditsUsage).values({
+        id: crypto.randomUUID(),
+        userId: session.user.id,
+        action: "daily_bonus",
+        amount: BONUS_AMOUNT,
+      });
+
+      return NextResponse.json({ success: true, added: BONUS_AMOUNT });
     }
 
     if (amount && amount > 0) {

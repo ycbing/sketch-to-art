@@ -11,6 +11,7 @@ export const users = pgTable(
     name: text("name"),
     avatarUrl: text("avatar_url"),
     credits: integer("credits").default(50).notNull(),
+    lastDailyBonusAt: timestamp("last_daily_bonus_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
@@ -35,7 +36,9 @@ export const userPasswords = pgTable(
 );
 
 // =====================
-// Styles (pre-defined, but also stored for flexibility)
+// Styles
+// NOTE: Currently only STYLE_PRESETS (lib/styles.ts) is used at runtime.
+// This table is kept for future dynamic style management but is not actively queried.
 // =====================
 export const styles = pgTable("styles", {
   id: text("id").primaryKey(),

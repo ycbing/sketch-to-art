@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { users, userPasswords, creditsUsage } from "@/lib/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { users, userPasswords } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { v4 as uuid } from "uuid";
 

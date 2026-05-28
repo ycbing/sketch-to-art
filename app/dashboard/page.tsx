@@ -11,20 +11,12 @@ import { toast } from "sonner";
 import { ImageIcon, Plus, Coins, Loader2, Calendar, Sparkles } from "lucide-react";
 import Link from "next/link";
 
-interface Artwork {
-  id: string;
-  title: string | null;
-  prompt: string | null;
-  resultUrl: string | null;
-  resultUrls: string | null;
-  styleId: string | null;
-  createdAt: string;
-}
+import { type ArtworkItem } from "@/types/artwork";
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [artworks, setArtworks] = useState<Artwork[]>([]);
+  const [artworks, setArtworks] = useState<ArtworkItem[]>([]);
   const [credits, setCredits] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [dailyClaimed, setDailyClaimed] = useState(false);
@@ -42,6 +34,9 @@ export default function DashboardPage() {
       if (creditsRes.ok) {
         const creditsData = await creditsRes.json();
         setCredits(creditsData.credits);
+        if (creditsData.canClaimDailyBonus === false) {
+          setDailyClaimed(true);
+        }
       }
     } catch {
       toast.error("加载数据失败");

@@ -42,16 +42,18 @@ export default function HomePage() {
               AI 将在几秒内为你生成专业级别的精美画作。
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link href="/signup">
-                <button className="btn-brand rounded-xl px-8 h-12 text-base font-semibold flex items-center gap-2">
-                  免费开始创作
-                  <ArrowRight className="h-4 w-4" />
-                </button>
+              <Link
+                href="/signup"
+                className="btn-brand rounded-xl px-8 h-12 text-base font-semibold flex items-center gap-2"
+              >
+                免费开始创作
+                <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link href="/#how-it-works">
-                <button className="rounded-xl px-8 h-12 text-base font-medium border border-border/60 bg-background/80 backdrop-blur-sm hover:bg-muted transition-all flex items-center gap-2">
-                  了解更多
-                </button>
+              <Link
+                href="/#how-it-works"
+                className="rounded-xl px-8 h-12 text-base font-medium border border-border/60 bg-background/80 backdrop-blur-sm hover:bg-muted transition-all flex items-center gap-2"
+              >
+                了解更多
               </Link>
             </div>
             <p className="text-xs text-muted-foreground/70 mt-4">
@@ -187,14 +189,15 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-          <div className="text-center mt-10 md:mt-14">
-            <Link href="/create">
-              <button className="btn-brand rounded-xl px-8 h-12 text-base font-semibold flex items-center gap-2 mx-auto">
-                立即体验
-                <ArrowRight className="h-4 w-4" />
-              </button>
-            </Link>
-          </div>
+<div className="text-center mt-10 md:mt-14">
+             <Link
+               href="/create"
+               className="btn-brand rounded-xl px-8 h-12 text-base font-semibold flex items-center gap-2 mx-auto w-fit"
+             >
+               立即体验
+               <ArrowRight className="h-4 w-4" />
+             </Link>
+           </div>
         </div>
       </section>
 
@@ -204,11 +207,12 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-3">准备好释放你的创意了吗？</h2>
           <p className="text-white/75 text-base md:text-lg mb-8">注册即可免费体验，让 AI 将你的想象变为现实</p>
-          <Link href="/signup">
-            <button className="rounded-xl px-8 h-12 text-base font-semibold bg-white text-violet-700 hover:bg-white/90 shadow-xl shadow-black/10 hover:shadow-2xl hover:scale-105 transition-all flex items-center gap-2 mx-auto">
-              免费注册，开始创作
-              <ArrowRight className="h-4 w-4" />
-            </button>
+          <Link
+            href="/signup"
+            className="rounded-xl px-8 h-12 text-base font-semibold bg-white text-violet-700 hover:bg-white/90 shadow-xl shadow-black/10 hover:shadow-2xl hover:scale-105 transition-all flex items-center gap-2 mx-auto w-fit"
+          >
+            免费注册，开始创作
+            <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>

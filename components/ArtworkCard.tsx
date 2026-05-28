@@ -6,17 +6,11 @@ import { Trash2, Download, Eye } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { getStyleById } from "@/lib/styles";
+import Image from "next/image";
+import { type ArtworkItem } from "@/types/artwork";
 
 interface ArtworkCardProps {
-  artwork: {
-    id: string;
-    title: string | null;
-    prompt: string | null;
-    resultUrl: string | null;
-    resultUrls: string | null;
-    styleId: string | null;
-    createdAt: string;
-  };
+  artwork: ArtworkItem;
   onDelete?: (id: string) => void;
 }
 
@@ -50,9 +44,11 @@ export function ArtworkCard({ artwork, onDelete }: ArtworkCardProps) {
       <Card className="group overflow-hidden border border-border/50 hover:border-primary/30 hover:shadow-lg transition-all duration-300">
         <div className="relative aspect-square overflow-hidden bg-muted">
           {urls[0] && (
-            <img
+            <Image
               src={urls[0]}
               alt={artwork.title || "Artwork"}
+              width={512}
+              height={512}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
           )}
@@ -105,7 +101,7 @@ export function ArtworkCard({ artwork, onDelete }: ArtworkCardProps) {
           <DialogTitle className="sr-only">作品预览</DialogTitle>
           {preview && (
             <div className="relative">
-              <img src={preview} alt="Preview" className="w-full h-auto" />
+              <Image src={preview} alt="Preview" width={1024} height={1024} className="w-full h-auto" />
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
                 <button
                   onClick={() => handleDownload(preview)}

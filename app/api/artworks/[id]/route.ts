@@ -3,6 +3,54 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { artworks } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
+import { deleteFromCos, isCosConfigured } from "@/lib/cos";
+
+function extractCosKey(url: string): string | null {
+  try {
+    const u = new URL(url);
+    const bucket = process.env.COS_BUCKET || "";
+    const region = process.env.COS_REGION || "";
+    const prefix = `https://${bucket}.cos.${region}.myqcloud.com/`;
+    if (url.startsWith(prefix)) {
+      return url.slice(prefix.length);
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+async function cleanupCosFiles(artwork: {
+  sketchUrl: string | null;
+  resultUrl: string | null;
+  resultUrls: string | null;
+}) {
+  if (!isCosConfigured()) return;
+
+  const keysToDelete: string[] = [];
+
+  if (artwork.sketchUrl) {
+    const key = extractCosKey(artwork.sketchUrl);
+    if (key) keysToDelete.push(key);
+  }
+  if (artwork.resultUrl) {
+    const key = extractCosKey(artwork.resultUrl);
+    if (key) keysToDelete.push(key);
+  }
+  if (artwork.resultUrls) {
+    try {
+      const urls: string[] = JSON.parse(artwork.resultUrls);
+      for (const url of urls) {
+        const key = extractCosKey(url);
+        if (key) keysToDelete.push(key);
+      }
+    } catch {}
+  }
+
+  await Promise.allSettled(
+    keysToDelete.map((key) => deleteFromCos(key))
+  );
+}
 
 // DELETE /api/artworks/[id] — delete an artwork
 export async function DELETE(
@@ -27,6 +75,9 @@ export async function DELETE(
     if (!rows.length) {
       return NextResponse.json({ error: "作品不存在" }, { status: 404 });
     }
+
+    // Clean up COS files
+    await cleanupCosFiles(rows[0]);
 
     await db
       .delete(artworks)

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Download, ZoomIn, Sparkles, ImageIcon } from "lucide-react";
+import Image from "next/image";
 
 interface ResultGalleryProps {
   images: string[];
@@ -71,9 +72,11 @@ export function ResultGallery({ images, loading }: ResultGalleryProps) {
               key={i}
               className="group relative aspect-square rounded-xl overflow-hidden border border-border/50 bg-muted shadow-sm hover:shadow-lg transition-all duration-300"
             >
-              <img
+              <Image
                 src={url}
                 alt={`Generated ${i + 1}`}
+                width={512}
+                height={512}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
@@ -103,11 +106,7 @@ export function ResultGallery({ images, loading }: ResultGalleryProps) {
           <DialogTitle className="sr-only">图片预览</DialogTitle>
           {previewIndex !== null && images[previewIndex] && (
             <div className="relative">
-              <img
-                src={images[previewIndex]}
-                alt="Preview"
-                className="w-full h-auto"
-              />
+              <Image src={images[previewIndex]} alt="Preview" width={1024} height={1024} className="w-full h-auto" />
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
                 <button
                   onClick={() => handleDownload(images[previewIndex])}
