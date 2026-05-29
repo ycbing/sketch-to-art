@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { users, userPasswords } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { v4 as uuid } from "uuid";
+import { rateLimit } from "@/lib/rate-limit";
 
 // POST /api/auth/register — register a new user
 export async function POST(request: NextRequest) {
+  const rateLimitResponse = rateLimit(request);
+  if (rateLimitResponse) return rateLimitResponse;
+
   try {
     const body = await request.json();
     const { email, password, name } = body;

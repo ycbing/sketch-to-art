@@ -70,11 +70,42 @@ export const artworks = pgTable(
     resultUrls: text("result_urls"),        // JSON array of COS URLs (batch mode)
     isPublic: boolean("is_public").default(false).notNull(),
     likes: integer("likes").default(0).notNull(),
+    provider: text("provider"),              // which image provider was used
+    styleStrength: integer("style_strength"),// style strength percentage
+    size: text("size").default("1024x1024"),// generated image size
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
     index("artworks_user_id_idx").on(table.userId),
     index("artworks_created_at_idx").on(table.createdAt),
+  ]
+);
+
+// =====================
+// Generation Tasks (async task tracking)
+// =====================
+export const generationTasks = pgTable(
+  "generation_tasks",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    status: text("status").notNull().default("pending"),
+    provider: text("provider"),
+    prompt: text("prompt"),
+    styleId: text("style_id"),
+    styleStrength: integer("style_strength"),
+    size: text("size").default("1024x1024"),
+    count: integer("count").default(1).notNull(),
+    resultUrls: text("result_urls"),
+    error: text("error"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("generation_tasks_user_id_idx").on(table.userId),
+    index("generation_tasks_status_idx").on(table.status),
   ]
 );
 

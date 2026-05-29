@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/Header";
@@ -8,12 +8,11 @@ import { CanvasPanel } from "@/components/CanvasPanel";
 import { StyleSelector } from "@/components/StyleSelector";
 import { GenerateButton } from "@/components/GenerateButton";
 import { ResultGallery } from "@/components/ResultGallery";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
 import { type StylePreset } from "@/lib/styles";
-import { Coins, Loader2, Image as ImageIcon, Sparkles } from "lucide-react";
+import { Coins, Loader2, Image as ImageIcon } from "lucide-react";
 
 export default function CreatePage() {
   const { data: session, status } = useSession();
@@ -24,8 +23,10 @@ export default function CreatePage() {
   const [prompt, setPrompt] = useState("");
   const [styleStrength, setStyleStrength] = useState(80);
   const [loading, setLoading] = useState(false);
+  const [taskStatus, setTaskStatus] = useState<string | null>(null);
   const [results, setResults] = useState<string[]>([]);
   const [credits, setCredits] = useState<number | null>(null);
+  const pollRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -42,10 +43,53 @@ export default function CreatePage() {
     }
   }, [status]);
 
-  const handleExport = useCallback((base64: string) => {
-    setSketchBase64(base64);
-    toast.success("草图已就绪，选择风格后点击生成");
+  const stopPolling = useCallback(() => {
+    if (pollRef.current) {
+      clearTimeout(pollRef.current);
+      pollRef.current = null;
+    }
   }, []);
+
+  const pollTask = useCallback(
+    (taskId: string, costCredits: number) => {
+      const poll = async () => {
+        try {
+          const res = await fetch(`/api/tasks/${taskId}`);
+          const data = await res.json();
+
+          if (data.status === "completed") {
+            setResults(data.resultUrls || []);
+            setCredits((prev) => (prev ?? 0) - costCredits);
+            setLoading(false);
+            setTaskStatus(null);
+            toast.success("画作生成成功！");
+            return;
+          }
+
+          if (data.status === "failed") {
+            setLoading(false);
+            setTaskStatus(null);
+            toast.error(data.error || "生成失败");
+            return;
+          }
+
+          setTaskStatus(data.status === "processing" ? "AI 正在创作中..." : "排队中...");
+          pollRef.current = setTimeout(poll, 2000);
+        } catch {
+          setLoading(false);
+          setTaskStatus(null);
+          toast.error("获取任务状态失败");
+        }
+      };
+
+      pollRef.current = setTimeout(poll, 1500);
+    },
+    []
+  );
+
+  useEffect(() => {
+    return () => stopPolling();
+  }, [stopPolling]);
 
   const handleGenerate = async () => {
     if (!selectedStyle) {
@@ -59,9 +103,10 @@ export default function CreatePage() {
 
     setLoading(true);
     setResults([]);
+    setTaskStatus("提交任务中...");
 
     try {
-      const res = await fetch("/api/generate", {
+      const res = await fetch("/api/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -69,22 +114,23 @@ export default function CreatePage() {
           styleId: selectedStyle.id,
           prompt: prompt || undefined,
           styleStrength,
+          count: 1,
         }),
       });
 
       const data = await res.json();
       if (!res.ok) {
         toast.error(data.error || "生成失败");
+        setLoading(false);
+        setTaskStatus(null);
         return;
       }
 
-      setResults([data.imageUrl]);
-      setCredits((prev) => (prev ?? 0) - 3);
-      toast.success("画作生成成功！");
+      pollTask(data.taskId, 3);
     } catch {
-      toast.error("生成失败，请重试");
-    } finally {
+      toast.error("提交任务失败，请重试");
       setLoading(false);
+      setTaskStatus(null);
     }
   };
 
@@ -100,9 +146,10 @@ export default function CreatePage() {
 
     setLoading(true);
     setResults([]);
+    setTaskStatus("提交任务中...");
 
     try {
-      const res = await fetch("/api/generate/batch", {
+      const res = await fetch("/api/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -117,16 +164,16 @@ export default function CreatePage() {
       const data = await res.json();
       if (!res.ok) {
         toast.error(data.error || "生成失败");
+        setLoading(false);
+        setTaskStatus(null);
         return;
       }
 
-      setResults(data.imageUrls || []);
-      setCredits((prev) => (prev ?? 0) - 6);
-      toast.success("批量生成完成！");
+      pollTask(data.taskId, 6);
     } catch {
-      toast.error("批量生成失败，请重试");
-    } finally {
+      toast.error("提交任务失败，请重试");
       setLoading(false);
+      setTaskStatus(null);
     }
   };
 
@@ -162,11 +209,21 @@ export default function CreatePage() {
               )}
             </div>
 
+            {/* Status indicator */}
+            {(taskStatus || loading) && (
+              <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-primary/5 border border-primary/20">
+                <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                <span className="text-xs font-medium text-primary">
+                  {taskStatus || "处理中..."}
+                </span>
+              </div>
+            )}
+
             {/* Sketch status */}
             <div className={`flex items-center gap-2 px-3 py-2.5 rounded-xl transition-all ${sketchBase64 ? 'bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-800/40' : 'bg-muted/50 border border-border/50'}`}>
               <div className={`w-2 h-2 rounded-full ${sketchBase64 ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground/30"}`} />
               <span className="text-xs font-medium text-muted-foreground">
-                {sketchBase64 ? "✅ 草图已就绪" : "在左侧画布绘制后点击「导出草图」"}
+                {sketchBase64 ? "草图已就绪" : "在左侧画布绘制后点击「导出草图」"}
               </span>
             </div>
 
@@ -212,10 +269,10 @@ export default function CreatePage() {
               />
               <p className="text-[11px] text-muted-foreground">
                 {styleStrength >= 70
-                  ? "🎨 强风格化 — AI 更侧重艺术风格表现"
+                  ? "强风格化 — AI 更侧重艺术风格表现"
                   : styleStrength >= 40
-                  ? "⚖️ 平衡模式 — 兼顾内容和风格"
-                  : "📝 内容优先 — 更忠实于原始描述"}
+                  ? "平衡模式 — 兼顾内容和风格"
+                  : "内容优先 — 更忠实于原始描述"}
               </p>
             </div>
 
