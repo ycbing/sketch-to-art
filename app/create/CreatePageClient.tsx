@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
 import { type StylePreset } from "@/lib/styles";
+import { StyleSkeleton } from "@/components/ui/skeleton";
 import { Coins, Loader2, Image as ImageIcon } from "lucide-react";
 
 export default function CreatePageClient() {
@@ -24,6 +25,9 @@ export default function CreatePageClient() {
   const [styleStrength, setStyleStrength] = useState(80);
   const [loading, setLoading] = useState(false);
   const [taskStatus, setTaskStatus] = useState<string | null>(null);
+  const [taskProgress, setTaskProgress] = useState(0);
+  const [taskError, setTaskError] = useState<string | null>(null);
+  const lastGenConfig = useRef<{ mode: "single" | "batch" }>({ mode: "single" });
   const [results, setResults] = useState<string[]>([]);
   const [credits, setCredits] = useState<number | null>(null);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
@@ -57,19 +61,23 @@ export default function CreatePageClient() {
           const res = await fetch(`/api/tasks/${taskId}`);
           const data = await res.json();
 
+          setTaskProgress(data.progress ?? 0);
+
           if (data.status === "completed") {
             setResults(data.resultUrls || []);
             setCredits((prev) => (prev ?? 0) - costCredits);
             setLoading(false);
             setTaskStatus(null);
-            toast.success("画作生成成功！");
+            setTaskProgress(0);
+            toast.success("画作生成成功！作品已自动保存。");
             return;
           }
 
           if (data.status === "failed") {
             setLoading(false);
             setTaskStatus(null);
-            toast.error(data.error || "生成失败");
+            setTaskProgress(0);
+            setTaskError(data.error || "生成失败");
             return;
           }
 
@@ -78,6 +86,7 @@ export default function CreatePageClient() {
         } catch {
           setLoading(false);
           setTaskStatus(null);
+          setTaskProgress(0);
           toast.error("获取任务状态失败");
         }
       };
@@ -108,6 +117,8 @@ export default function CreatePageClient() {
 
     setLoading(true);
     setResults([]);
+    setTaskError(null);
+    lastGenConfig.current = { mode: "single" };
     setTaskStatus("提交任务中...");
 
     try {
@@ -151,6 +162,8 @@ export default function CreatePageClient() {
 
     setLoading(true);
     setResults([]);
+    setTaskError(null);
+    lastGenConfig.current = { mode: "batch" };
     setTaskStatus("提交任务中...");
 
     try {
@@ -188,8 +201,20 @@ export default function CreatePageClient() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="min-h-screen flex flex-col bg-background">
+        <div className="h-14 border-b border-border/50 bg-background/80" />
+        <div className="flex-1 flex flex-col lg:flex-row">
+          <div className="lg:w-[60%] w-full h-[50vh] lg:h-full border-r border-border/50">
+            <Skeleton className="w-full h-full" />
+          </div>
+          <div className="lg:w-[40%] w-full p-6 space-y-5">
+            <Skeleton className="h-6 w-32" />
+            <StyleSkeleton />
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -220,11 +245,42 @@ export default function CreatePageClient() {
 
             {/* Status indicator */}
             {(taskStatus || loading) && (
-              <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-primary/5 border border-primary/20">
-                <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                <span className="text-xs font-medium text-primary">
-                  {taskStatus || "处理中..."}
-                </span>
+              <div className="space-y-2 px-3 py-2.5 rounded-xl bg-primary/5 border border-primary/20">
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                  <span className="text-xs font-medium text-primary">
+                    {taskStatus || "处理中..."}
+                  </span>
+                </div>
+                {taskProgress > 0 && taskProgress < 100 && (
+                  <div className="w-full h-1.5 rounded-full bg-primary/10 overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-600 transition-all duration-500 ease-out"
+                      style={{ width: `${taskProgress}%` }}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Error state with retry */}
+            {taskError && !loading && (
+              <div className="space-y-2 px-3 py-3 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200/60 dark:border-red-800/40">
+                <p className="text-xs text-red-600 dark:text-red-400">{taskError}</p>
+                <button
+                  onClick={() => {
+                    setTaskError(null);
+                    if (lastGenConfig.current.mode === "batch") {
+                      handleBatchGenerate();
+                    } else {
+                      handleGenerate();
+                    }
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors"
+                >
+                  <Loader2 className="h-3 w-3" />
+                  重试
+                </button>
               </div>
             )}
 

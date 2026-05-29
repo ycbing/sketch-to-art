@@ -155,13 +155,24 @@ export function CanvasPanel({ onExport, hasSketch }: CanvasPanelProps) {
 
         <div className="flex items-center gap-2 px-3 py-2 rounded-2xl shadow-lg border border-border/50 glass-panel">
           {/* Undo */}
-          <button
+<button
             onClick={handleUndo}
             disabled={shapeCount === 0}
             className="flex items-center gap-1 px-2.5 py-2 text-xs font-medium rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             title="撤销 (Ctrl+Z)"
+            aria-label="撤销"
           >
-            <Undo2 className="w-3.5 h-3.5" />
+            <Undo2 className="w-3.5 h-3.5" aria-hidden="true" />
+          </button>
+
+          <button
+            onClick={handleRedo}
+            disabled={shapeCount === 0}
+            className="flex items-center gap-1 px-2.5 py-2 text-xs font-medium rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            title="重做 (Ctrl+Shift+Z)"
+            aria-label="重做"
+          >
+            <Redo2 className="w-3.5 h-3.5" aria-hidden="true" />
           </button>
 
           {/* Redo */}
@@ -181,6 +192,7 @@ export function CanvasPanel({ onExport, hasSketch }: CanvasPanelProps) {
             onClick={handleExport}
             disabled={isExporting}
             className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl bg-gradient-to-r from-violet-500 to-indigo-600 text-white shadow-sm hover:shadow-md hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="导出草图为图片"
           >
             {hasSketch ? (
               <><Check className="w-3.5 h-3.5" /> 已就绪</>
@@ -198,6 +210,7 @@ export function CanvasPanel({ onExport, hasSketch }: CanvasPanelProps) {
             onClick={handleRequestClear}
             disabled={shapeCount === 0}
             className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            aria-label="清空画布"
           >
             <Trash2 className="w-3.5 h-3.5" />
             清空

@@ -92,6 +92,7 @@ export const generationTasks = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     status: text("status").notNull().default("pending"),
+    progress: integer("progress").default(0).notNull(),
     provider: text("provider"),
     prompt: text("prompt"),
     styleId: text("style_id"),

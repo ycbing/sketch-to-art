@@ -18,6 +18,13 @@ export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const emailValid = !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const passwordValid = !password || password.length >= 6;
+  const passwordStrength = password.length < 6 ? "" : password.length < 8 ? "弱" : password.length < 12 ? "中" : "强";
+  const passwordStrengthColor = password.length < 8 ? "text-red-500" : password.length < 12 ? "text-amber-500" : "text-emerald-500";
+  const confirmMatch = !confirmPassword || confirmPassword === password;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,10 +107,16 @@ export default function SignUpPage() {
                 type="email"
                 placeholder="your@email.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="rounded-xl focus:ring-primary/50"
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setTouched((p) => ({ ...p, email: true }));
+                }}
+                className={`rounded-xl focus:ring-primary/50 ${touched.email && !emailValid ? "border-red-400" : ""}`}
                 required
               />
+              {touched.email && !emailValid && (
+                <p className="text-xs text-red-500">请输入有效的邮箱地址</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">密码</Label>
@@ -112,10 +125,20 @@ export default function SignUpPage() {
                 type="password"
                 placeholder="至少6位密码"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="rounded-xl focus:ring-primary/50"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setTouched((p) => ({ ...p, password: true }));
+                }}
+                className={`rounded-xl focus:ring-primary/50 ${touched.password && !passwordValid ? "border-red-400" : ""}`}
                 required
               />
+              {touched.password && !passwordValid ? (
+                <p className="text-xs text-red-500">密码至少需要6位</p>
+              ) : password && passwordValid ? (
+                <p className={`text-xs ${passwordStrengthColor}`}>
+                  密码强度：{passwordStrength}
+                </p>
+              ) : null}
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirm-password">确认密码</Label>
@@ -124,10 +147,16 @@ export default function SignUpPage() {
                 type="password"
                 placeholder="再次输入密码"
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="rounded-xl focus:ring-primary/50"
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  setTouched((p) => ({ ...p, confirm: true }));
+                }}
+                className={`rounded-xl focus:ring-primary/50 ${touched.confirm && !confirmMatch ? "border-red-400" : ""}`}
                 required
               />
+              {touched.confirm && !confirmMatch && (
+                <p className="text-xs text-red-500">两次密码输入不一致</p>
+              )}
             </div>
           </CardContent>
 

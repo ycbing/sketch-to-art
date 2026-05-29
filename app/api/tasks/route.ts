@@ -98,7 +98,7 @@ async function processGenerationTask(
     provider: ReturnType<typeof getConfiguredProvider>;
   }
 ) {
-  const { updateTaskStatus } = await import("@/lib/ai/task-manager");
+  const { updateTaskStatus, updateTaskProgress } = await import("@/lib/ai/task-manager");
   const { buildStylePrompt } = await import("@/lib/styles");
   const { generateImage: genImg } = await import("@/lib/ai/image-generator");
   const { uploadBase64ToCos, uploadUrlToCos, isCosConfigured } = await import("@/lib/cos");
@@ -107,9 +107,11 @@ async function processGenerationTask(
   const { v4: uuid } = await import("uuid");
 
   try {
-    await updateTaskStatus(taskId, "processing");
+    await updateTaskStatus(taskId, "processing", { progress: 10 });
 
     const stylePrompt = buildStylePrompt(params.styleId, params.prompt, params.styleStrength);
+
+    await updateTaskProgress(taskId, 30);
 
     const imagePromises = Array.from({ length: params.count }, () =>
       genImg({
@@ -119,6 +121,8 @@ async function processGenerationTask(
       })
     );
     const imageUrls = await Promise.all(imagePromises);
+
+    await updateTaskProgress(taskId, 70);
 
     const resultUrls = await Promise.all(
       imageUrls.map(async (url, i) => {
@@ -133,6 +137,8 @@ async function processGenerationTask(
         return url;
       })
     );
+
+    await updateTaskProgress(taskId, 90);
 
     // Upload sketch if provided
     let sketchCosUrl: string | null = null;
@@ -174,7 +180,7 @@ async function processGenerationTask(
       artworkId,
     });
 
-    await updateTaskStatus(taskId, "completed", { resultUrls });
+    await updateTaskStatus(taskId, "completed", { resultUrls, progress: 100 });
   } catch (error) {
     console.error("Generation task failed:", error);
     await updateTaskStatus(taskId, "failed", {

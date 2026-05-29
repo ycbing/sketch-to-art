@@ -7,6 +7,7 @@ export type TaskStatus = "pending" | "processing" | "completed" | "failed";
 export interface TaskInfo {
   id: string;
   status: TaskStatus;
+  progress: number;
   provider?: string | null;
   resultUrls?: string[] | null;
   error?: string | null;
@@ -27,6 +28,7 @@ export async function createTask(params: {
     id,
     userId: params.userId,
     status: "pending",
+    progress: 0,
     provider: params.provider,
     prompt: params.prompt,
     styleId: params.styleId,
@@ -37,15 +39,26 @@ export async function createTask(params: {
   return id;
 }
 
+export async function updateTaskProgress(
+  taskId: string,
+  progress: number
+): Promise<void> {
+  await db
+    .update(generationTasks)
+    .set({ progress, updatedAt: new Date() })
+    .where(eq(generationTasks.id, taskId));
+}
+
 export async function updateTaskStatus(
   taskId: string,
   status: TaskStatus,
-  extra?: { resultUrls?: string[]; error?: string }
+  extra?: { resultUrls?: string[]; error?: string; progress?: number }
 ): Promise<void> {
   await db
     .update(generationTasks)
     .set({
       status,
+      ...(extra?.progress !== undefined ? { progress: extra.progress } : {}),
       ...(extra?.resultUrls ? { resultUrls: JSON.stringify(extra.resultUrls) } : {}),
       ...(extra?.error ? { error: extra.error } : {}),
       updatedAt: new Date(),
@@ -66,6 +79,7 @@ export async function getTask(taskId: string): Promise<TaskInfo | null> {
   return {
     id: row.id,
     status: row.status as TaskStatus,
+    progress: row.progress,
     provider: row.provider,
     resultUrls: row.resultUrls ? JSON.parse(row.resultUrls) : null,
     error: row.error,
@@ -84,6 +98,7 @@ export async function getUserTasks(userId: string, limit: number = 20): Promise<
   return rows.map((row) => ({
     id: row.id,
     status: row.status as TaskStatus,
+    progress: row.progress,
     provider: row.provider,
     resultUrls: row.resultUrls ? JSON.parse(row.resultUrls) : null,
     error: row.error,

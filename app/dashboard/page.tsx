@@ -7,6 +7,7 @@ import { Header } from "@/components/Header";
 import { ArtworkCard } from "@/components/ArtworkCard";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
+import { DashboardSkeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { ImageIcon, Plus, Coins, Loader2, Calendar, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -18,6 +19,9 @@ export default function DashboardPage() {
   const router = useRouter();
   const [artworks, setArtworks] = useState<ArtworkItem[]>([]);
   const [credits, setCredits] = useState<number | null>(null);
+  const [creditHistory, setCreditHistory] = useState<
+    { id: string; action: string; amount: number; createdAt: string }[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [dailyClaimed, setDailyClaimed] = useState(false);
 
@@ -34,6 +38,7 @@ export default function DashboardPage() {
       if (creditsRes.ok) {
         const creditsData = await creditsRes.json();
         setCredits(creditsData.credits);
+        setCreditHistory(creditsData.recentUsage || []);
         if (creditsData.canClaimDailyBonus === false) {
           setDailyClaimed(true);
         }
@@ -98,8 +103,10 @@ export default function DashboardPage() {
 
   if (status === "loading" || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="min-h-screen flex flex-col bg-background">
+        <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+          <DashboardSkeleton />
+        </div>
       </div>
     );
   }
@@ -155,6 +162,39 @@ export default function DashboardPage() {
             </Link>
           </div>
         </div>
+
+        {/* Credit history */}
+        {creditHistory.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-1.5">
+              <Coins className="h-3.5 w-3.5 text-amber-500" />
+              积分明细
+            </h3>
+            <div className="space-y-1.5">
+              {creditHistory.slice(0, 8).map((item) => {
+                const isCredit = item.action === "daily_bonus";
+                const labels: Record<string, string> = {
+                  generate_single: "单张生成",
+                  generate_batch: "批量生成",
+                  daily_bonus: "每日签到",
+                };
+                return (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/30 text-xs"
+                  >
+                    <span className="text-muted-foreground">
+                      {labels[item.action] || item.action}
+                    </span>
+                    <span className={isCredit ? "font-semibold text-emerald-600" : "font-semibold text-muted-foreground"}>
+                      {isCredit ? "+" : "-"}{item.amount} 积分
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Gallery */}
         {artworks.length === 0 ? (
