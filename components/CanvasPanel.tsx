@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 import { useCallback, useRef, useState } from "react";
 import type { Editor } from "tldraw";
 import { Camera, Trash2, Check } from "lucide-react";
-import "tldraw/tldraw.css";
 
 const Tldraw = dynamic(() => import("tldraw").then((mod) => mod.Tldraw), {
   ssr: false,
@@ -35,11 +34,17 @@ export function CanvasPanel({ onExport, hasSketch }: CanvasPanelProps) {
 
     try {
       const svgString = await editorRef.current.getSvgString();
-      if (!svgString) return;
+      if (!svgString) {
+        setIsExporting(false);
+        return;
+      }
 
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
-      if (!ctx) return;
+      if (!ctx) {
+        setIsExporting(false);
+        return;
+      }
 
       canvas.width = 1024;
       canvas.height = 1024;
@@ -75,7 +80,7 @@ export function CanvasPanel({ onExport, hasSketch }: CanvasPanelProps) {
     }
   }, [isExporting, onExport]);
 
-  const handleClear = useCallback(async () => {
+  const handleClear = useCallback(() => {
     if (!editorRef.current) return;
     try {
       const editor = editorRef.current;
@@ -90,10 +95,7 @@ export function CanvasPanel({ onExport, hasSketch }: CanvasPanelProps) {
 
   return (
     <div className="relative w-full h-full">
-      <Tldraw
-        onMount={handleMount}
-        options={{ maxPages: 1 }}
-      />
+      <Tldraw onMount={handleMount} />
 
       {/* Floating action bar - bottom center */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1001]">
