@@ -12,7 +12,7 @@ export interface ImageProvider {
   readonly name: string;
   readonly id: string;
   isConfigured(): boolean;
-  generate(opts: ImageGenerationResult & { prompt: string; stylePrompt: string; sketchBase64?: string; size?: string }): Promise<string>;
+  generate(opts: GenerateImageOpts): Promise<string>;
 }
 
 export type GenerateImageOpts = {

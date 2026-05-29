@@ -92,6 +92,8 @@ export async function POST(request: NextRequest) {
         prompt: prompt || "",
         sketchUrl: sketchCosUrl,
         resultUrl: resultCosUrl,
+        styleStrength,
+        size: "1024x1024",
       });
 
       await db.insert(creditsUsage).values({

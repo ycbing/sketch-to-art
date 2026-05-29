@@ -102,6 +102,8 @@ export async function POST(request: NextRequest) {
         sketchUrl: sketchCosUrl,
         resultUrl: resultUrls[0],
         resultUrls: JSON.stringify(resultUrls),
+        styleStrength,
+        size: "1024x1024",
       });
 
       await db.insert(creditsUsage).values({

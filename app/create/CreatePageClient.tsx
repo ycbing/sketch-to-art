@@ -182,6 +182,10 @@ export default function CreatePageClient() {
     }
   };
 
+  const handleRegenerate = useCallback(() => {
+    handleGenerate();
+  }, []);
+
   if (status === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -303,7 +307,7 @@ export default function CreatePageClient() {
             </div>
 
             {/* Results */}
-            <ResultGallery images={results} loading={loading} />
+            <ResultGallery images={results} loading={loading} onRegenerate={handleRegenerate} />
           </div>
         </div>
       </main>

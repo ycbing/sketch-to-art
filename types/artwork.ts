@@ -5,5 +5,8 @@ export interface ArtworkItem {
   resultUrl: string | null;
   resultUrls: string | null;
   styleId: string | null;
+  provider: string | null;
+  styleStrength: number | null;
+  size: string | null;
   createdAt: string;
 }

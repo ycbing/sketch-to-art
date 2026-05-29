@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useCallback, useRef, useState } from "react";
 import type { Editor } from "tldraw";
-import { Camera, Trash2, Check } from "lucide-react";
+import { Camera, Trash2, Check, Undo2, Redo2, AlertTriangle } from "lucide-react";
 
 const Tldraw = dynamic(() => import("tldraw").then((mod) => mod.Tldraw), {
   ssr: false,
@@ -23,9 +23,36 @@ interface CanvasPanelProps {
 export function CanvasPanel({ onExport, hasSketch }: CanvasPanelProps) {
   const editorRef = useRef<Editor | null>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [shapeCount, setShapeCount] = useState(0);
 
-  const handleMount = useCallback((editor: Editor) => {
-    editorRef.current = editor;
+  const updateShapeCount = useCallback((editor: Editor) => {
+    try {
+      const ids = editor.getCurrentPageShapeIds();
+      setShapeCount(ids.size);
+    } catch {}
+  }, []);
+
+  const handleMount = useCallback(
+    (editor: Editor) => {
+      editorRef.current = editor;
+      updateShapeCount(editor);
+
+      const unsubscribe = editor.store.listen(() => {
+        updateShapeCount(editor);
+      });
+
+      return () => unsubscribe();
+    },
+    [updateShapeCount]
+  );
+
+  const handleUndo = useCallback(() => {
+    editorRef.current?.undo();
+  }, []);
+
+  const handleRedo = useCallback(() => {
+    editorRef.current?.redo();
   }, []);
 
   const handleExport = useCallback(async () => {
@@ -88,10 +115,17 @@ export function CanvasPanel({ onExport, hasSketch }: CanvasPanelProps) {
       if (allShapes.size > 0) {
         editor.deleteShapes([...allShapes]);
       }
+      updateShapeCount(editor);
+      setShowClearConfirm(false);
     } catch (err) {
       console.error("Clear failed:", err);
     }
-  }, []);
+  }, [updateShapeCount]);
+
+  const handleRequestClear = useCallback(() => {
+    if (shapeCount === 0) return;
+    setShowClearConfirm(true);
+  }, [shapeCount]);
 
   return (
     <div className="relative w-full h-full">
@@ -99,7 +133,50 @@ export function CanvasPanel({ onExport, hasSketch }: CanvasPanelProps) {
 
       {/* Floating action bar - bottom center */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1001]">
+        {/* Clear confirmation */}
+        {showClearConfirm && (
+          <div className="mb-3 flex items-center gap-2 px-4 py-3 rounded-2xl shadow-xl border border-red-200/60 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl">
+            <AlertTriangle className="h-4 w-4 text-red-500 shrink-0" />
+            <span className="text-sm font-medium">确定要清空画布吗？</span>
+            <button
+              onClick={handleClear}
+              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors"
+            >
+              清空
+            </button>
+            <button
+              onClick={() => setShowClearConfirm(false)}
+              className="px-3 py-1.5 text-xs font-medium rounded-lg bg-muted hover:bg-muted/80 transition-colors"
+            >
+              取消
+            </button>
+          </div>
+        )}
+
         <div className="flex items-center gap-2 px-3 py-2 rounded-2xl shadow-lg border border-border/50 glass-panel">
+          {/* Undo */}
+          <button
+            onClick={handleUndo}
+            disabled={shapeCount === 0}
+            className="flex items-center gap-1 px-2.5 py-2 text-xs font-medium rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            title="撤销 (Ctrl+Z)"
+          >
+            <Undo2 className="w-3.5 h-3.5" />
+          </button>
+
+          {/* Redo */}
+          <button
+            onClick={handleRedo}
+            disabled={shapeCount === 0}
+            className="flex items-center gap-1 px-2.5 py-2 text-xs font-medium rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            title="重做 (Ctrl+Shift+Z)"
+          >
+            <Redo2 className="w-3.5 h-3.5" />
+          </button>
+
+          <div className="w-px h-6 bg-border/50" />
+
+          {/* Export */}
           <button
             onClick={handleExport}
             disabled={isExporting}
@@ -113,15 +190,28 @@ export function CanvasPanel({ onExport, hasSketch }: CanvasPanelProps) {
               <><Camera className="w-3.5 h-3.5" /> 导出草图</>
             )}
           </button>
+
           <div className="w-px h-6 bg-border/50" />
+
+          {/* Clear */}
           <button
-            onClick={handleClear}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+            onClick={handleRequestClear}
+            disabled={shapeCount === 0}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <Trash2 className="w-3.5 h-3.5" />
             清空
           </button>
         </div>
+
+        {/* Shape count badge */}
+        {shapeCount > 0 && !showClearConfirm && (
+          <div className="flex justify-center mt-2">
+            <span className="text-[10px] text-muted-foreground/60">
+              {shapeCount} 个元素
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

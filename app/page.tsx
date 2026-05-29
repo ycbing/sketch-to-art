@@ -145,7 +145,8 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
             {STYLE_PRESETS.map((style) => (
-              <div
+              <Link
+                href="/create"
                 key={style.id}
                 className="group relative flex flex-col items-center p-3 md:p-4 rounded-2xl border border-border/50 bg-card hover:shadow-lg hover:-translate-y-1 hover:border-primary/20 transition-all duration-300 cursor-pointer"
               >
@@ -156,7 +157,7 @@ export default function HomePage() {
                 </div>
                 <span className="font-medium text-sm">{style.name}</span>
                 <span className="text-[10px] text-muted-foreground">{style.nameEn}</span>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
