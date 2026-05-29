@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash2, Download, Eye } from "lucide-react";
+import { Trash2, Download, Eye, Globe, GlobeLock } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { getStyleById } from "@/lib/styles";
@@ -12,9 +12,10 @@ import { type ArtworkItem } from "@/types/artwork";
 interface ArtworkCardProps {
   artwork: ArtworkItem;
   onDelete?: (id: string) => void;
+  onTogglePublic?: (id: string, isPublic: boolean) => void;
 }
 
-export function ArtworkCard({ artwork, onDelete }: ArtworkCardProps) {
+export function ArtworkCard({ artwork, onDelete, onTogglePublic }: ArtworkCardProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const style = artwork.styleId ? getStyleById(artwork.styleId) : null;
 
@@ -84,7 +85,22 @@ export function ArtworkCard({ artwork, onDelete }: ArtworkCardProps) {
                 {new Date(artwork.createdAt).toLocaleDateString("zh-CN")}
               </p>
             </div>
-            {onDelete && (
+            <div className="flex items-center gap-1">
+              {onTogglePublic && (
+                <button
+                  onClick={() => onTogglePublic(artwork.id, !artwork.isPublic)}
+                  className={`p-1.5 rounded-lg transition-all shrink-0 ${
+                    artwork.isPublic
+                      ? "text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                  title={artwork.isPublic ? "公开" : "私密"}
+                  aria-label={artwork.isPublic ? "设为私密" : "设为公开"}
+                >
+                  {artwork.isPublic ? <Globe className="h-3.5 w-3.5" /> : <GlobeLock className="h-3.5 w-3.5" />}
+                </button>
+              )}
+              {onDelete && (
               <button
                 onClick={() => onDelete(artwork.id)}
                 className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0"
@@ -92,6 +108,7 @@ export function ArtworkCard({ artwork, onDelete }: ArtworkCardProps) {
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
             )}
+            </div>
           </div>
         </div>
       </Card>

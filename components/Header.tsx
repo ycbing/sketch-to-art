@@ -34,6 +34,12 @@ export function Header() {
           <Link href="/#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
             使用方法
           </Link>
+          <Link href="/pricing" className="text-primary font-semibold hover:text-primary/80 transition-colors">
+            定价
+          </Link>
+          <Link href="/gallery" className="text-muted-foreground hover:text-foreground transition-colors">
+            画廊
+          </Link>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -90,6 +96,8 @@ export function Header() {
           <div className="px-4 py-3 space-y-2">
             <Link href="/#features" onClick={() => setMobileOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground">功能</Link>
             <Link href="/#styles" onClick={() => setMobileOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground">风格</Link>
+            <Link href="/pricing" onClick={() => setMobileOpen(false)} className="block py-2 text-sm font-medium text-primary">定价</Link>
+            <Link href="/gallery" onClick={() => setMobileOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground">画廊</Link>
             <Link href="/create" onClick={() => setMobileOpen(false)} className="block py-2 text-sm font-medium">开始创作</Link>
             {session?.user ? (
               <>

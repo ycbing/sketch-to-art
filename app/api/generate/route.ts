@@ -7,6 +7,7 @@ import { v4 as uuid } from "uuid";
 import { generateImage } from "@/lib/ai/image-generator";
 import { uploadBase64ToCos, uploadUrlToCos, isCosConfigured } from "@/lib/cos";
 import { buildStylePrompt } from "@/lib/styles";
+import { logger } from "@/lib/logger";
 
 const CREDITS_PER_GENERATION = 3;
 
@@ -67,7 +68,7 @@ export async function POST(request: NextRequest) {
           const sketchKey = `sketch-to-art/sketches/${uuid()}.png`;
           sketchCosUrl = await uploadBase64ToCos(sketchBase64, sketchKey);
         } catch (e) {
-          console.error("Sketch upload failed:", e);
+          logger.error("Sketch upload failed:", e);
         }
       }
 

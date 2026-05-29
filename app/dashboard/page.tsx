@@ -75,6 +75,26 @@ export default function DashboardPage() {
     }
   };
 
+  const handleTogglePublic = async (id: string, isPublic: boolean) => {
+    try {
+      const res = await fetch("/api/artworks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, isPublic }),
+      });
+      if (res.ok) {
+        setArtworks((prev) =>
+          prev.map((a) => (a.id === id ? { ...a, isPublic } : a))
+        );
+        toast.success(isPublic ? "已公开到画廊" : "已设为私密");
+      } else {
+        toast.error("操作失败");
+      }
+    } catch {
+      toast.error("操作失败");
+    }
+  };
+
   const handleDailyBonus = async () => {
     if (dailyClaimed) return;
     try {
@@ -130,7 +150,15 @@ export default function DashboardPage() {
               <Coins className="h-4 w-4 text-amber-500" />
               <span className="text-xs font-medium text-muted-foreground">剩余积分</span>
             </div>
-            <p className="text-2xl lg:text-3xl font-bold text-amber-700 dark:text-amber-400">{credits ?? 0}</p>
+            <div className="flex items-end justify-between">
+              <p className="text-2xl lg:text-3xl font-bold text-amber-700 dark:text-amber-400">{credits ?? 0}</p>
+              <Link
+                href="/pricing"
+                className="text-[10px] font-semibold text-amber-600 dark:text-amber-400 hover:underline"
+              >
+                购买积分
+              </Link>
+            </div>
           </div>
           <div className="p-4 lg:p-5 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 border border-emerald-100 dark:border-emerald-900/40">
             <div className="flex items-center gap-2 mb-1.5">
@@ -220,6 +248,7 @@ export default function DashboardPage() {
                 key={artwork.id}
                 artwork={artwork}
                 onDelete={handleDelete}
+                onTogglePublic={handleTogglePublic}
               />
             ))}
           </div>

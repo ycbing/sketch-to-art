@@ -8,5 +8,7 @@ export interface ArtworkItem {
   provider: string | null;
   styleStrength: number | null;
   size: string | null;
+  isPublic: boolean;
+  likes: number;
   createdAt: string;
 }

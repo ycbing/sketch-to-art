@@ -9,6 +9,7 @@
     "build": "next build",
     "start": "next start -p 3006",
     "lint": "eslint",
+    "test": "node --import tsx --test __tests__/**/*.test.ts",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio"
   },
