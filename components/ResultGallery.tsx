@@ -16,17 +16,28 @@ export function ResultGallery({ images, loading, onRegenerate }: ResultGalleryPr
 
   const handleDownload = async (url: string) => {
     try {
-      const res = await fetch(url);
-      const blob = await res.blob();
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `sketch-to-art-${Date.now()}.png`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(a.href);
+      if (isDataUrl(url)) {
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `sketch-to-art-${Date.now()}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } else {
+        const res = await fetch(url);
+        const blob = await res.blob();
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `sketch-to-art-${Date.now()}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+      }
     } catch {
-      window.open(url, "_blank");
+      if (!isDataUrl(url)) {
+        window.open(url, "_blank");
+      }
     }
   };
 

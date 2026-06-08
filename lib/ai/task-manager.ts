@@ -6,6 +6,7 @@ export type TaskStatus = "pending" | "processing" | "completed" | "failed";
 
 export interface TaskInfo {
   id: string;
+  userId: string;
   status: TaskStatus;
   progress: number;
   provider?: string | null;
@@ -78,6 +79,7 @@ export async function getTask(taskId: string): Promise<TaskInfo | null> {
   const row = rows[0];
   return {
     id: row.id,
+    userId: row.userId,
     status: row.status as TaskStatus,
     progress: row.progress,
     provider: row.provider,
@@ -97,6 +99,7 @@ export async function getUserTasks(userId: string, limit: number = 20): Promise<
 
   return rows.map((row) => ({
     id: row.id,
+    userId: row.userId,
     status: row.status as TaskStatus,
     progress: row.progress,
     provider: row.provider,

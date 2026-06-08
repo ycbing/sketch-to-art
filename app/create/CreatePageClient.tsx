@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
 import { type StylePreset } from "@/lib/styles";
-import { StyleSkeleton } from "@/components/ui/skeleton";
+import { Skeleton, StyleSkeleton } from "@/components/ui/skeleton";
 import { Coins, Loader2, Image as ImageIcon } from "lucide-react";
 
 export default function CreatePageClient() {
@@ -78,6 +78,10 @@ export default function CreatePageClient() {
             setTaskStatus(null);
             setTaskProgress(0);
             setTaskError(data.error || "生成失败");
+            fetch("/api/credits")
+              .then((res) => res.json())
+              .then((d) => setCredits(d.credits ?? 0))
+              .catch(() => {});
             return;
           }
 
@@ -106,6 +110,7 @@ export default function CreatePageClient() {
   }, []);
 
   const handleGenerate = async () => {
+    stopPolling();
     if (!selectedStyle) {
       toast.error("请先选择一个艺术风格");
       return;
@@ -151,6 +156,7 @@ export default function CreatePageClient() {
   };
 
   const handleBatchGenerate = async () => {
+    stopPolling();
     if (!selectedStyle) {
       toast.error("请先选择一个艺术风格");
       return;
@@ -195,9 +201,9 @@ export default function CreatePageClient() {
     }
   };
 
-  const handleRegenerate = useCallback(() => {
+  const handleRegenerate = () => {
     handleGenerate();
-  }, []);
+  };
 
   if (status === "loading") {
     return (

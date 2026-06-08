@@ -125,6 +125,9 @@ export function buildStylePrompt(
   if (styleWeight >= 60) {
     return `${style.prompt}. ${userPrompt}. Style weight: ${styleWeight}%.`;
   } else {
-    return `${userPrompt}. With ${style.prompt.substring(0, 60)}... Style weight: ${styleWeight}%.`;
+    const truncated = style.prompt.length > 60
+      ? style.prompt.substring(0, 60).replace(/\s+\S*$/, "")
+      : style.prompt;
+    return `${userPrompt}. With ${truncated}... Style weight: ${styleWeight}%.`;
   }
 }

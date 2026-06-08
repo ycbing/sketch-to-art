@@ -5,7 +5,7 @@ import { getConfiguredProvider } from "@/lib/ai/image-generator";
 import { rateLimit } from "@/lib/rate-limit";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 const CREDITS_PER_IMAGE = 3;
 
@@ -53,6 +53,12 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Deduct credits atomically before starting background task
+    await db
+      .update(users)
+      .set({ credits: sql`${users.credits} - ${totalCredits}` })
+      .where(eq(users.id, session.user.id));
 
     const taskId = await createTask({
       userId: session.user.id,
@@ -103,7 +109,6 @@ async function processGenerationTask(
   const { generateImage: genImg } = await import("@/lib/ai/image-generator");
   const { uploadBase64ToCos, uploadUrlToCos, isCosConfigured } = await import("@/lib/cos");
   const { artworks, creditsUsage } = await import("@/lib/db/schema");
-  const { sql } = await import("drizzle-orm");
   const { v4: uuid } = await import("uuid");
 
   try {
@@ -166,12 +171,7 @@ async function processGenerationTask(
       styleStrength: params.styleStrength,
     });
 
-    // Deduct credits
-    await db
-      .update(users)
-      .set({ credits: sql`${users.credits} - ${params.totalCredits}` })
-      .where(eq(users.id, params.userId));
-
+    // Record credits usage (credits already deducted synchronously)
     await db.insert(creditsUsage).values({
       id: uuid(),
       userId: params.userId,
@@ -187,16 +187,14 @@ async function processGenerationTask(
       error: error instanceof Error ? error.message : "生成失败",
     });
 
-    // Refund credits on failure
-    if (params.provider) {
-      try {
-        await db
-          .update(users)
-          .set({ credits: sql`${users.credits} + ${params.totalCredits}` })
-          .where(eq(users.id, params.userId));
-      } catch (refundErr) {
-        console.error("Credit refund failed:", refundErr);
-      }
+    // Refund credits on failure (credits were deducted synchronously before task)
+    try {
+      await db
+        .update(users)
+        .set({ credits: sql`${users.credits} + ${params.totalCredits}` })
+        .where(eq(users.id, params.userId));
+    } catch (refundErr) {
+      console.error("Credit refund failed:", refundErr);
     }
   }
 }

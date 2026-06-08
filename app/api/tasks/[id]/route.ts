@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { getTask, getUserTasks } from "@/lib/ai/task-manager";
+import { getTask } from "@/lib/ai/task-manager";
 
 // GET /api/tasks/[id] — poll task status
 export async function GET(
@@ -18,6 +18,10 @@ export async function GET(
 
     if (!task) {
       return NextResponse.json({ error: "任务不存在" }, { status: 404 });
+    }
+
+    if (task.userId !== session.user.id) {
+      return NextResponse.json({ error: "无权访问此任务" }, { status: 403 });
     }
 
     return NextResponse.json(task);
