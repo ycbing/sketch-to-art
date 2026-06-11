@@ -1,4 +1,3 @@
-import "tldraw/tldraw.css";
 import CreatePageClient from "./CreatePageClient";
 
 export default function CreatePage() {

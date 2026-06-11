@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Heart, ImageIcon, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { STYLE_PRESETS, type StylePreset } from "@/lib/styles";
 
 interface GalleryArtwork {
   id: string;
@@ -24,6 +25,7 @@ export default function GalleryPage() {
   const [artworks, setArtworks] = useState<GalleryArtwork[]>([]);
   const [loading, setLoading] = useState(true);
   const [likingId, setLikingId] = useState<string | null>(null);
+  const [activeStyle, setActiveStyle] = useState<string>("all");
 
   useEffect(() => {
     fetch("/api/gallery")
@@ -54,15 +56,29 @@ export default function GalleryPage() {
     }
   };
 
+  const toProxyUrl = (url: string | null): string | null => {
+    if (!url) return null;
+    if (url.includes(".cos.")) {
+      const match = url.match(/myqcloud\.com\/(.+)$/);
+      if (match) return "/api/uploads/cos/" + match[1];
+    }
+    return url;
+  };
+
   const getImageUrl = (artwork: GalleryArtwork): string | null => {
     if (artwork.resultUrls) {
       try {
         const urls: string[] = JSON.parse(artwork.resultUrls);
-        return urls[0] || artwork.resultUrl;
+        return toProxyUrl(urls[0] || artwork.resultUrl);
       } catch {}
     }
-    return artwork.resultUrl;
+    return toProxyUrl(artwork.resultUrl);
   };
+
+  const filteredArtworks =
+    activeStyle === "all"
+      ? artworks
+      : artworks.filter((a) => a.styleId === activeStyle);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -76,6 +92,33 @@ export default function GalleryPage() {
           </p>
         </div>
 
+        {/* Style filter */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
+          <button
+            onClick={() => setActiveStyle("all")}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              activeStyle === "all"
+                ? "bg-primary text-white"
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
+            }`}
+          >
+            全部
+          </button>
+          {STYLE_PRESETS.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => setActiveStyle(s.id)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                activeStyle === s.id
+                  ? "bg-primary text-white"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              {s.name}
+            </button>
+          ))}
+        </div>
+
         {loading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {Array.from({ length: 8 }, (_, i) => (
@@ -85,7 +128,7 @@ export default function GalleryPage() {
               </div>
             ))}
           </div>
-        ) : artworks.length === 0 ? (
+        ) : filteredArtworks.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-100 to-indigo-100 dark:from-violet-950/40 dark:to-indigo-950/40 flex items-center justify-center mb-4">
               <ImageIcon className="h-7 w-7 text-violet-400" />
@@ -104,7 +147,7 @@ export default function GalleryPage() {
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {artworks.map((artwork) => {
+            {filteredArtworks.map((artwork) => {
               const imgUrl = getImageUrl(artwork);
               return (
                 <div
@@ -130,7 +173,13 @@ export default function GalleryPage() {
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 hover:bg-white text-gray-800 text-xs font-medium transition-all hover:scale-105"
                         aria-label="点赞"
                       >
-                        <Heart className={`h-3.5 w-3.5 ${likingId === artwork.id ? "animate-pulse fill-red-500 text-red-500" : ""}`} />
+                        <Heart
+                          className={`h-3.5 w-3.5 ${
+                            likingId === artwork.id
+                              ? "animate-pulse fill-red-500 text-red-500"
+                              : ""
+                          }`}
+                        />
                         {artwork.likes || 0}
                       </button>
                     </div>

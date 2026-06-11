@@ -1,56 +1,41 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+import { Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Check, Sparkles, Coins, ArrowRight } from "lucide-react";
-import Link from "next/link";
 
 const PLANS = [
   {
     id: "starter",
-    name: "入门包",
-    credits: 100,
-    price: 9.9,
-    originalPrice: 19.9,
+    name: "免费体验",
+    price: "免费",
+    credits: 50,
+    features: ["注册即送 50 积分", "约可生成 16 张画作", "12 种艺术风格", "基础画质"],
     popular: false,
-    desc: "体验 AI 创作的乐趣",
-    features: ["100 积分", "约可生成 30 张画作", "永久有效", "标准画质 1024px"],
-  },
-  {
-    id: "creator",
-    name: "创作者包",
-    credits: 500,
-    price: 39.9,
-    originalPrice: 79.9,
-    popular: true,
-    desc: "满足日常创作需求",
-    features: ["500 积分", "约可生成 160 张画作", "永久有效", "高优先级队列", "批量生成支持 (4张/次)"],
   },
   {
     id: "pro",
-    name: "专业包",
+    name: "创作者",
+    price: "¥9.9",
+    credits: 500,
+    features: ["500 积分永久有效", "约可生成 160 张画作", "12 种艺术风格", "批量生成", "高优先级"],
+    popular: true,
+  },
+  {
+    id: "studio",
+    name: "工作室",
+    price: "¥29.9",
     credits: 1500,
-    price: 99.9,
-    originalPrice: 199.9,
+    features: ["1500 积分永久有效", "约可生成 500 张画作", "所有高级风格", "批量生成", "优先体验新功能"],
     popular: false,
-    desc: "解放创作生产力",
-    features: ["1500 积分", "约可生成 500 张画作", "永久有效", "最高优先级队列", "批量生成支持 (4张/次)", "优先体验新风格"],
   },
 ];
 
 export default function PricingPage() {
-  const { data: session } = useSession();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
   const handlePurchase = async (planId: string, credits: number) => {
-    if (!session) {
-      toast.error("请先登录后再购买");
-      return;
-    }
-
     setLoadingPlan(planId);
     try {
       const res = await fetch("/api/credits/purchase", {
@@ -58,101 +43,69 @@ export default function PricingPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ planId, credits }),
       });
-
-      if (res.ok) {
-        toast.success(`购买成功！${credits} 积分已到账，开始创作吧`);
-        setTimeout(() => window.location.href = "/create", 1000);
-      } else {
-        const data = await res.json();
-        toast.error(data.error || "购买失败，请重试");
-      }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "购买失败");
+      toast.success(`购买成功！${credits} 积分已到账`);
+      setLoadingPlan(null);
     } catch {
-      toast.error("网络错误，请重试");
-    } finally {
+      toast.error("购买失败，请重试");
       setLoadingPlan(null);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <Header />
-
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
-        <div className="text-center mb-12 lg:mb-16">
-          <h1 className="text-3xl lg:text-4xl font-bold mb-3">选择适合你的套餐</h1>
-          <p className="text-muted-foreground text-base lg:text-lg max-w-lg mx-auto">
-            一次购买，积分永久有效。解锁更多创作可能
+    <div className="min-h-screen bg-background">
+      <div className="max-w-4xl mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h1 className="text-3xl font-bold mb-3">简单透明的价格</h1>
+          <p className="text-muted-foreground">
+            一次购买，积分永久有效。注册即送 50 积分开始体验。
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {PLANS.map((plan) => (
             <div
               key={plan.id}
-              className={`relative p-6 lg:p-8 rounded-2xl border-2 transition-all duration-300 ${
+              className={`relative rounded-2xl border p-6 flex flex-col ${
                 plan.popular
-                  ? "border-primary bg-primary/5 shadow-xl shadow-primary/10 scale-[1.02]"
-                  : "border-border/50 bg-card hover:border-primary/30 hover:shadow-lg"
+                  ? "border-primary shadow-lg shadow-primary/10 scale-105"
+                  : "border-border"
               }`}
             >
               {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-primary-foreground text-xs font-semibold shadow-lg">
-                  最受欢迎
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-primary text-white text-xs font-medium">
+                  推荐
                 </div>
               )}
-
-              <h2 className="text-xl font-bold mb-1">{plan.name}</h2>
-              <p className="text-sm text-muted-foreground mb-6">{plan.desc}</p>
-
-              <div className="mb-6">
-                <span className="text-4xl font-bold">¥{plan.price}</span>
-                {plan.originalPrice > plan.price && (
-                  <span className="ml-2 text-sm text-muted-foreground line-through">
-                    ¥{plan.originalPrice}
-                  </span>
-                )}
+              <div className="mb-4">
+                <h2 className="text-xl font-bold">{plan.name}</h2>
+                <div className="mt-1 text-3xl font-bold">
+                  {plan.price}
+                </div>
               </div>
 
-              <button
-                onClick={() => handlePurchase(plan.id, plan.credits)}
-                disabled={loadingPlan !== null}
-                className={`w-full py-3 rounded-xl font-semibold text-sm transition-all duration-300 mb-6 ${
-                  plan.popular
-                    ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20 hover:shadow-xl"
-                    : "bg-muted hover:bg-muted/80 text-foreground"
-                } disabled:opacity-50`}
-              >
-                {loadingPlan === plan.id ? (
-                  "处理中..."
-                ) : (
-                  <span className="flex items-center justify-center gap-2">
-                    <Sparkles className="h-4 w-4" />
-                    立即购买
-                    <ArrowRight className="h-4 w-4" />
-                  </span>
-                )}
-              </button>
-
-              <ul className="space-y-3">
+              <ul className="space-y-2.5 flex-1 mb-6">
                 {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2.5 text-sm text-muted-foreground">
-                    <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                  <li key={f} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                     {f}
                   </li>
                 ))}
               </ul>
+
+              <Button
+                onClick={() => handlePurchase(plan.id, plan.credits)}
+                disabled={loadingPlan === plan.id}
+                className="w-full h-10 font-medium rounded-xl"
+                variant={plan.popular ? "default" : "outline"}
+              >
+                {loadingPlan === plan.id ? "处理中..." : plan.price === "免费" ? "注册领取" : "立即购买"}
+              </Button>
             </div>
           ))}
         </div>
-
-        <div className="text-center mt-10">
-          <p className="text-xs text-muted-foreground">
-            购买即表示同意服务条款。如有问题请联系 support@sketchtoart.com
-          </p>
-        </div>
-      </main>
-
-      <Footer />
+      </div>
     </div>
   );
 }

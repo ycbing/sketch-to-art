@@ -5,3 +5,4 @@ drizzle
 .env.local
 .turbo
 .vercel
+start-standalone.sh
