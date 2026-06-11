@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Moon -->
+  <circle cx="160" cy="40" r="20"/>
+  <circle cx="168" cy="35" r="16" stroke="none" fill="white"/>
+  <!-- Ground line -->
+  <line x1="10" y1="175" x2="190" y2="175"/>
+  <!-- Building 1 - tall narrow -->
+  <rect x="20" y="60" width="25" height="115"/>
+  <line x1="26" y1="70" x2="26" y2="80"/>
+  <line x1="39" y1="70" x2="39" y2="80"/>
+  <line x1="26" y1="90" x2="26" y2="100"/>
+  <line x1="39" y1="90" x2="39" y2="100"/>
+  <line x1="26" y1="110" x2="26" y2="120"/>
+  <line x1="39" y1="110" x2="39" y2="120"/>
+  <line x1="26" y1="130" x2="26" y2="140"/>
+  <line x1="39" y1="130" x2="39" y2="140"/>
+  <!-- Building 2 - medium with roof -->
+  <rect x="55" y="85" width="35" height="90"/>
+  <polygon points="55,85 72,55 90,85"/>
+  <!-- Building 3 - tallest -->
+  <rect x="100" y="40" width="30" height="135"/>
+  <line x1="107" y1="50" x2="107" y2="60"/>
+  <line x1="123" y1="50" x2="123" y2="60"/>
+  <line x1="107" y1="70" x2="107" y2="80"/>
+  <line x1="123" y1="70" x2="123" y2="80"/>
+  <line x1="107" y1="90" x2="107" y2="100"/>
+  <line x1="123" y1="90" x2="123" y2="100"/>
+  <line x1="107" y1="110" x2="107" y2="120"/>
+  <line x1="123" y1="110" x2="123" y2="120"/>
+  <line x1="107" y1="130" x2="107" y2="140"/>
+  <line x1="123" y1="130" x2="123" y2="140"/>
+  <!-- Antenna on tallest -->
+  <line x1="115" y1="40" x2="115" y2="22"/>
+  <!-- Building 4 - short wide -->
+  <rect x="140" y="110" width="40" height="65"/>
+  <polygon points="140,110 160,82 180,110"/>
+  <!-- Small building in back -->
+  <rect x="85" y="95" width="15" height="80"/>
+  <!-- Stars -->
+  <circle cx="30" cy="25" r="1.5"/>
+  <circle cx="55" cy="15" r="1.5"/>
+  <circle cx="80" cy="22" r="1.5"/>
+  <circle cx="130" cy="18" r="1.5"/>
+  <circle cx="45" cy="38" r="1"/>
+</svg>

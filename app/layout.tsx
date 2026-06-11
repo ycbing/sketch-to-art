@@ -9,8 +9,13 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "SketchToArt - 手绘草图秒变精美画作",
-  description: "AI 驱动的草图转艺术品工具。在画布上绘制草图，选择你喜欢的风格，AI 瞬间为你生成精美画作。",
+  title: 'SketchToArt — AI Sketch to Art Generator',
+  description: 'Transform your sketches into stunning art with AI. 12 art styles, free canvas, instant generation.',
+  openGraph: {
+    title: 'SketchToArt — AI Sketch to Art Generator',
+    description: 'Transform your sketches into stunning art with AI.',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({

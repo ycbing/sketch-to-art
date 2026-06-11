@@ -1,0 +1,42 @@
+[
+  {
+    "id": "cat",
+    "name": "Cat",
+    "sketch": "/examples/sketches/cat.svg",
+    "style": "watercolor",
+    "styleName": "水彩风格",
+    "description": "Simple cat sketch → Watercolor painting"
+  },
+  {
+    "id": "knight",
+    "name": "Knight",
+    "sketch": "/examples/sketches/knight.svg",
+    "style": "oil-painting",
+    "styleName": "油画风格",
+    "description": "Stick figure knight → Oil painting"
+  },
+  {
+    "id": "city",
+    "name": "City",
+    "sketch": "/examples/sketches/city.svg",
+    "style": "cyberpunk",
+    "styleName": "赛博朋克风格",
+    "description": "City skyline sketch → Cyberpunk city"
+  },
+  {
+    "id": "peony",
+    "name": "Peony",
+    "sketch": "/examples/sketches/peony.svg",
+    "style": "chinese-ink",
+    "styleName": "国风水墨风格",
+    "description": "Simple flower sketch → Chinese ink painting"
+  },
+  {
+    "id": "castle",
+    "name": "Castle",
+    "sketch": "/examples/sketches/castle.svg",
+    "style": "pixel",
+    "styleName": "像素风格",
+    "description": "Simple castle sketch → Pixel art"
+  }
+]

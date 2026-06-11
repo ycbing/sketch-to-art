@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: storycraft
+      POSTGRES_PASSWORD: storycraft123
+      POSTGRES_DB: sketch_to_art
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U storycraft"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    ports:
+      - "3006:3006"
+    environment:
+      DATABASE_URL: postgresql://storycraft:storycraft123@db:5432/sketch_to_art
+      GLM_API_KEY: ${GLM_API_KEY}
+      GLM_BASE_URL: ${GLM_BASE_URL}
+      IMAGE_MODEL: cogview-3-plus
+      IMAGE_PROVIDER: cogview
+      NEXTAUTH_SECRET: sketch-to-art-secret-2026
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3006}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pgdata:

@@ -1,169 +1,160 @@
-# SketchToArt
+<p align="center">
+  <img src="public/file.svg" alt="SketchToArt Logo" width="80" height="80" />
+</p>
 
-AI 驱动的草图转画作工具。在画布上绘制草图，选择艺术风格，AI 瞬间生成精美画作。
+<h1 align="center">SketchToArt</h1>
 
-## 功能特性
+<p align="center">
+  <strong>Transform your sketches into stunning art with AI.</strong><br/>
+  Draw on the canvas, choose an art style, and watch AI bring your vision to life.
+</p>
 
-- **自由绘制** — 基于 tldraw 的专业画布工具，支持多种画笔和形状
-- **12 种艺术风格** — 水彩、油画、二次元、国风水墨、赛博朋克等
-- **AI 生成** — 支持多供应商（CogView / DALL-E / Stability AI），秒级生成 1024px 高清画作
-- **异步任务** — 生成任务后台执行，前端实时轮询状态
-- **批量创作** — 一次生成多张不同效果，挑选最满意的结果
-- **积分系统** — 注册送 50 积分，每日签到领 10 积分
-- **暗色模式** — 完整的 light/dark 主题切换
-- **作品管理** — 保存、浏览、下载、删除创作历史
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-16-black?logo=next.js&logoColor=white" alt="Next.js" />
+  <img src="https://img.shields.io/badge/tldraw-v4-blue?logo=tldraw&logoColor=white" alt="tldraw" />
+  <img src="https://img.shields.io/badge/CogView-3-Plus-orange?logo=zhipuai&logoColor=white" alt="CogView" />
+  <img src="https://img.shields.io/badge/TypeScript-5-blue?logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-4-38B2AC?logo=tailwindcss&logoColor=white" alt="Tailwind" />
+  <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License" />
+  <a href="https://github.com/ycbing/sketch-to-art/stargazers"><img src="https://img.shields.io/github/stars/ycbing/sketch-to-art?style=social" alt="GitHub stars" /></a>
+</p>
 
-## 技术栈
+---
 
-- **框架** — Next.js 16 (App Router, RSC)
-- **语言** — TypeScript
-- **样式** — Tailwind CSS 4
-- **画布** — tldraw v4
-- **数据库** — PostgreSQL + Drizzle ORM
-- **认证** — NextAuth v5 (Credentials Provider)
-- **存储** — 腾讯云 COS
-- **AI** — 智谱 CogView-3-Plus 图像生成
-- **UI** — Radix UI + shadcn/ui
+## ✨ What is SketchToArt?
 
-## 快速开始
+SketchToArt is an AI-powered tool that transforms your hand-drawn sketches into beautiful artwork. Draw anything on the interactive canvas, pick from 12 curated art styles, and let AI generate stunning results in seconds.
 
-### 环境要求
+## 🎨 12 Art Styles
 
-- Node.js 18+
-- PostgreSQL 数据库
-- 智谱 API Key
-- 腾讯云 COS 配置（可选，不上传时回退到临时 URL）
+| Style | Preview | Description |
+|-------|---------|-------------|
+| 🎨 Watercolor | `from-blue-200 to-pink-200` | Soft, transparent color washes with visible brush strokes |
+| 🖼️ Oil Painting | `from-amber-200 to-orange-300` | Rich, vivid colors with classical chiaroscuro lighting |
+| 🌸 Anime | `from-pink-200 to-rose-300` | Japanese animation with vibrant cel-shading |
+| 🎋 Chinese Ink | `from-gray-200 to-slate-300` | Traditional ink wash painting with zen aesthetic |
+| 🌃 Cyberpunk | `from-fuchsia-500 to-indigo-600` | Neon-soaked futuristic cityscapes |
+| 👾 Pixel Art | `from-cyan-200 to-sky-300` | Retro 16-bit game aesthetic with crisp pixels |
+| ✏️ Flat Illustration | `from-emerald-200 to-teal-300` | Clean vector shapes with bold solid colors |
+| 🔮 3D Render | `from-violet-200 to-purple-300` | Photorealistic CGI with volumetric lighting |
+| ✍️ Sketch | `from-gray-300 to-stone-400` | Professional pencil drawing with detailed hatching |
+| 💎 Low Poly | `from-teal-200 to-emerald-300` | Geometric faceted surfaces with colorful gradients |
+| 🎪 Vintage Poster | `from-yellow-200 to-amber-300` | Retro mid-century graphic design with aged texture |
+| ⬜ Minimalism | `from-slate-100 to-zinc-200` | Clean lines and ample negative space |
 
-### 安装依赖
+## 🚀 Quick Start
+
+### Deploy with Docker (Recommended)
 
 ```bash
-npm install
-```
+git clone https://github.com/ycbing/sketch-to-art.git
+cd sketch-to-art
 
-### 配置环境变量
-
-复制 `.env.example` 并填写配置：
-
-```bash
+# Copy environment file
 cp .env.example .env.local
+# Edit .env.local with your API keys
+
+# Start with Docker Compose (includes PostgreSQL)
+docker compose up -d
 ```
 
-需要配置的环境变量：
+Open [http://localhost:3006](http://localhost:3006)
 
-```env
-# 数据库
-DATABASE_URL=postgresql://user:password@host:5432/dbname
+### Deploy to Vercel
 
-# 认证
-NEXTAUTH_SECRET=your-secret-key
-NEXTAUTH_URL=http://localhost:3006
+[![Deploy with Vercel](https://vercel.com/new/clone?repository-url=https://github.com/ycbing/sketch-to-art&project-name=sketch-to-art&env=GLM_API_KEY,IMAGE_MODEL,IMAGE_PROVIDER)](https://vercel.com/new/clone?repository-url=https://github.com/ycbing/sketch-to-art&project-name=sketch-to-art&env=GLM_API_KEY,IMAGE_MODEL,IMAGE_PROVIDER)
 
-# 图像生成供应商（三选一或按需配置多个）
-# cogview（默认）| dalle | stability | 留空自动检测
-IMAGE_PROVIDER=cogview
-
-# 智谱 CogView
-GLM_API_KEY=your-glm-api-key
-GLM_BASE_URL=https://open.bigmodel.cn/api/paas/v4
-IMAGE_MODEL=cogview-3-plus
-
-# OpenAI DALL-E（可选）
-# OPENAI_API_KEY=your-openai-api-key
-# DALLE_MODEL=dall-e-3
-
-# Stability AI（可选）
-# STABILITY_API_KEY=your-stability-api-key
-
-# 腾讯云 COS（可选，不上传时回退到临时 URL）
-COS_SECRET_ID=your-secret-id
-COS_SECRET_KEY=your-secret-key
-COS_BUCKET=your-bucket
-COS_REGION=ap-shanghai
-```
-
-### 初始化数据库
+### Local Development
 
 ```bash
-npm run db:push
+git clone https://github.com/ycbing/sketch-to-art.git
+cd sketch-to-art
+
+cp .env.example .env.local
+pnpm install
+pnpm run db:push
+pnpm run dev
 ```
 
-### 启动开发服务器
+Open [http://localhost:3006](http://localhost:3006)
 
-```bash
-npm run dev
-```
+## 🛠️ Tech Stack
 
-访问 [http://localhost:3006](http://localhost:3006)
+- **Framework** — [Next.js 16](https://nextjs.org/) (App Router, RSC)
+- **Language** — [TypeScript](https://www.typescriptlang.org/)
+- **Canvas** — [tldraw v4](https://tldraw.dev/) (professional drawing tools)
+- **Database** — [PostgreSQL](https://www.postgresql.org/) + [Drizzle ORM](https://orm.drizzle.team/)
+- **Auth** — [NextAuth v5](https://authjs.dev/) (Credentials Provider)
+- **Storage** — [Tencent Cloud COS](https://cloud.tencent.com/product/cos) (optional)
+- **AI** — [ZhipuAI CogView](https://open.bigmodel.cn/) (image generation)
+- **UI** — [Radix UI](https://www.radix-ui.com/) + [shadcn/ui](https://ui.shadcn.com/)
 
-### 构建生产版本
-
-```bash
-npm run build
-npm start
-```
-
-## 项目结构
+## 📁 Project Structure
 
 ```
-├── app/                    # Next.js App Router 页面和 API
-│   ├── api/                # API 路由
-│   │   ├── auth/           # 认证（登录/注册）
-│   │   ├── artworks/       # 作品 CRUD
-│   │   ├── credits/        # 积分查询/签到
-│   │   ├── generate/       # AI 生成（单张/批量）
-│   │   └── styles/         # 风格列表
-│   ├── create/             # 创作页面
-│   ├── dashboard/          # 作品管理
-│   ├── signin/             # 登录
-│   └── signup/             # 注册
-├── components/             # React 组件
-│   ├── providers/          # Session / Theme Provider
-│   ├── ui/                 # shadcn/ui 组件
-│   ├── ArtworkCard.tsx     # 作品卡片
-│   ├── CanvasPanel.tsx     # tldraw 画布
-│   ├── ErrorBoundary.tsx   # 错误边界
-│   ├── GenerateButton.tsx  # 生成按钮
-│   ├── Header.tsx / Footer.tsx
-│   ├── ResultGallery.tsx   # 结果画廊
-│   └── StyleSelector.tsx   # 风格选择器
-├── lib/                    # 核心逻辑
-│   ├── ai/                 # AI 图像生成
-│   │   ├── providers/      # 多供应商 Provider 注册模式
-│   │   │   ├── index.ts    # Provider 注册表 + generateImage 入口
-│   │   │   ├── cogview.ts  # 智谱 CogView
-│   │   │   ├── dalle.ts    # OpenAI DALL-E
-│   │   │   │   └── stability.ts # Stability AI
-│   │   ├── task-manager.ts # 异步任务管理
-│   │   └── image-generator.ts # 向后兼容导出
-│   ├── auth.ts             # NextAuth 配置
-│   ├── auth-helpers.ts     # 认证辅助函数
-│   ├── cos.ts              # 腾讯云 COS 上传
-│   ├── db/                 # Drizzle ORM schema & client
-│   ├── styles.ts           # 艺术风格预设
-│   └── utils.ts            # 通用工具
-├── types/                  # 共享类型定义
-│   └── artwork.ts          # ArtworkItem 类型
-└── public/                 # 静态资源
+sketch-to-art/
+├── app/
+│   ├── (marketing)/           # Landing page components
+│   │   ├── components/       # Hero, Showcase, Features, etc.
+│   │   └── page.tsx          # Marketing landing page
+│   ├── api/
+│   │   ├── auth/             # Login / Register
+│   │   ├── artworks/         # Artwork CRUD
+│   │   ├── credits/          # Credits system
+│   │   ├── generate/         # AI generation (single / batch)
+│   │   ├── gallery/          # Public gallery
+│   │   ├── styles/           # Style list
+│   │   └── tasks/            # Async task management
+│   ├── create/               # Create page (canvas + generate)
+│   ├── dashboard/            # User's artworks
+│   ├── demo/                 # Quick demo with preset sketches
+│   ├── gallery/              # Public gallery
+│   ├── signin/               # Login
+│   ├── signup/               # Register
+│   └── layout.tsx            # Root layout
+├── components/                # Shared React components
+│   ├── ui/                   # shadcn/ui components
+│   ├── CanvasPanel.tsx       # tldraw drawing canvas
+│   ├── StyleSelector.tsx      # Art style picker
+│   └── ...
+├── lib/
+│   ├── ai/                   # AI image generation
+│   │   ├── providers/        # CogView / DALL-E / Stability AI
+│   │   └── task-manager.ts   # Async task queue
+│   ├── db/                   # Drizzle schema
+│   ├── styles.ts             # 12 art style presets
+│   └── cos.ts                # Tencent COS uploader
+├── public/examples/           # Demo sketch assets
+│   ├── sketches/              # SVG sketch files
+│   └── examples.json         # Example metadata
+└── types/                    # TypeScript type definitions
 ```
 
-## 积分规则
+## ⚙️ Configuration
 
-| 操作 | 消耗/获得积分 |
-|------|-------------|
-| 新用户注册 | +50 |
-| 每日签到 | +10（每天限领一次） |
-| 单张生成 | -3 |
-| 批量生成（2 张） | -6 |
+### Required
 
-## 部署
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `DATABASE_URL` | PostgreSQL connection string | — |
+| `NEXTAUTH_SECRET` | Auth secret key | — |
+| `GLM_API_KEY` | ZhipuAI API key for CogView | — |
 
-项目使用 `output: "standalone"` 配置，支持 Docker 部署：
+### Optional
 
-```bash
-docker build -t sketch-to-art .
-docker run -p 3006:3006 --env-file .env sketch-to-art
-```
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `IMAGE_PROVIDER` | `cogview` / `dalle` / `stability` | `cogview` |
+| `IMAGE_MODEL` | Model name for generation | `cogview-3-plus` |
+| `COS_SECRET_ID` | Tencent COS credentials | — |
+| `COS_SECRET_KEY` | Tencent COS credentials | — |
+| `COS_BUCKET` | Tencent COS bucket name | — |
+| `COS_REGION` | Tencent COS region | — |
 
-## License
+## 🤝 Contributing
 
-MIT
+Contributions are welcome! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.

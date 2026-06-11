@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Outer petals (large) -->
+  <ellipse cx="100" cy="60" rx="18" ry="28" transform="rotate(0,100,85)"/>
+  <ellipse cx="100" cy="60" rx="18" ry="28" transform="rotate(51,100,85)"/>
+  <ellipse cx="100" cy="60" rx="18" ry="28" transform="rotate(103,100,85)"/>
+  <ellipse cx="100" cy="60" rx="18" ry="28" transform="rotate(154,100,85)"/>
+  <ellipse cx="100" cy="60" rx="18" ry="28" transform="rotate(206,100,85)"/>
+  <ellipse cx="100" cy="60" rx="18" ry="28" transform="rotate(257,100,85)"/>
+  <ellipse cx="100" cy="60" rx="18" ry="28" transform="rotate(309,100,85)"/>
+  <!-- Inner petals (smaller) -->
+  <ellipse cx="100" cy="72" rx="12" ry="18" transform="rotate(25,100,85)"/>
+  <ellipse cx="100" cy="72" rx="12" ry="18" transform="rotate(77,100,85)"/>
+  <ellipse cx="100" cy="72" rx="12" ry="18" transform="rotate(129,100,85)"/>
+  <ellipse cx="100" cy="72" rx="12" ry="18" transform="rotate(181,100,85)"/>
+  <ellipse cx="100" cy="72" rx="12" ry="18" transform="rotate(233,100,85)"/>
+  <ellipse cx="100" cy="72" rx="12" ry="18" transform="rotate(285,100,85)"/>
+  <!-- Center -->
+  <circle cx="100" cy="85" r="8"/>
+  <!-- Center dots (stamens) -->
+  <circle cx="97" cy="83" r="1.5"/>
+  <circle cx="103" cy="83" r="1.5"/>
+  <circle cx="100" cy="88" r="1.5"/>
+  <circle cx="95" cy="87" r="1"/>
+  <circle cx="105" cy="87" r="1"/>
+  <!-- Stem -->
+  <path d="M100,93 Q98,130 95,170"/>
+  <!-- Leaf 1 -->
+  <path d="M97,130 Q72,118 65,130 Q72,142 97,130"/>
+  <line x1="97" y1="130" x2="70" y2="130"/>
+  <!-- Leaf 2 -->
+  <path d="M96,150 Q120,138 128,150 Q120,162 96,150"/>
+  <line x1="96" y1="150" x2="123" y2="150"/>
+  <!-- Small bud on stem -->
+  <path d="M94,105 Q86,100 88,108 Q90,112 94,110"/>
+</svg>

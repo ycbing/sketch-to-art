@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Helmet -->
+  <path d="M82,32 L80,48 Q78,60 90,62 L110,62 Q122,60 120,48 L118,32"/>
+  <line x1="100" y1="28" x2="100" y2="18"/>
+  <!-- Visor slit -->
+  <line x1="88" y1="50" x2="112" y2="50"/>
+  <!-- Head circle -->
+  <circle cx="100" cy="70" r="10"/>
+  <!-- Body -->
+  <line x1="100" y1="80" x2="100" y2="135"/>
+  <!-- Arms -->
+  <line x1="100" y1="95" x2="65" y2="110"/>
+  <line x1="100" y1="95" x2="140" y2="85"/>
+  <!-- Left hand holds shield -->
+  <ellipse cx="58" cy="108" rx="14" ry="20"/>
+  <line x1="58" y1="88" x2="58" y2="128"/>
+  <!-- Shield cross -->
+  <line x1="48" y1="108" x2="68" y2="108"/>
+  <!-- Spear in right hand -->
+  <line x1="138" y1="82" x2="138" y2="12"/>
+  <!-- Spear head -->
+  <path d="M132,18 L138,6 L144,18"/>
+  <!-- Legs -->
+  <line x1="100" y1="135" x2="82" y2="175"/>
+  <line x1="100" y1="135" x2="118" y2="175"/>
+  <!-- Feet -->
+  <line x1="82" y1="175" x2="75" y2="178"/>
+  <line x1="118" y1="175" x2="125" y2="178"/>
+</svg>

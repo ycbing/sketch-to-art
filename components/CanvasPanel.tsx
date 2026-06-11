@@ -60,11 +60,13 @@ export function CanvasPanel({ onExport, hasSketch }: CanvasPanelProps) {
     setIsExporting(true);
 
     try {
-      const svgString = await editorRef.current.getSvgString();
-      if (!svgString) {
+      const svgResult = await editorRef.current.getSvgString([]);
+      if (!svgResult) {
         setIsExporting(false);
         return;
       }
+
+      const svgString = typeof svgResult === 'string' ? svgResult : svgResult.svg;
 
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
