@@ -43,7 +43,7 @@ export function DeploySection() {
               <div className="text-sm font-semibold text-white">
                 Deploy to Vercel
               </div>
-              <div className="text-xs text-white/40">One-click deploy</div>
+              <div className="text-xs text-white/40">一键部署</div>
             </div>
           </a>
 

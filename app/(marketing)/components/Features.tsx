@@ -1,37 +1,37 @@
 const features = [
   {
     icon: '🎨',
-    title: '12 Art Styles',
+    title: '12 种艺术风格',
     description:
       'Watercolor, oil painting, cyberpunk, Chinese ink, pixel art, and more — find the perfect style for your vision.',
   },
   {
     icon: '✏️',
-    title: 'Free Canvas',
+    title: '自由画板',
     description:
       "Draw freely with tldraw's professional drawing tools. Pens, shapes, erasers — everything you need.",
   },
   {
     icon: '🚀',
-    title: 'Instant Generation',
+    title: '即时生成',
     description:
       'Powered by AI, get results in seconds. No waiting, no rendering — just instant art.',
   },
   {
     icon: '📦',
-    title: 'Batch Creation',
+    title: '批量创作',
     description:
       'Generate multiple variations at once. Compare and pick the one that resonates most.',
   },
   {
     icon: '💾',
-    title: 'Export & Share',
+    title: '导出分享',
     description:
       'Download your artwork in high resolution or share it directly with the world.',
   },
   {
     icon: '🔒',
-    title: 'Privacy First',
+    title: '隐私优先',
     description:
       'Your sketches never leave your browser. Create with confidence and peace of mind.',
   },
