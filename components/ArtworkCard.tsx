@@ -19,11 +19,19 @@ export function ArtworkCard({ artwork, onDelete, onTogglePublic }: ArtworkCardPr
   const [preview, setPreview] = useState<string | null>(null);
   const style = artwork.styleId ? getStyleById(artwork.styleId) : null;
 
-  const urls = artwork.resultUrls
+  const toProxyUrl = (url: string) => {
+    if (url.includes('.cos.')) {
+      const match = url.match(/myqcloud\.com\/(.+)$/);
+      if (match) return '/api/uploads/cos/' + match[1];
+    }
+    return url;
+  };
+
+  const urls = (artwork.resultUrls
     ? JSON.parse(artwork.resultUrls) as string[]
     : artwork.resultUrl
     ? [artwork.resultUrl]
-    : [];
+    : []).map(toProxyUrl);
 
   const handleDownload = async (url: string) => {
     try {

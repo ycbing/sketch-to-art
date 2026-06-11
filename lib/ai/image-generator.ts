@@ -4,3 +4,4 @@ export { getProvider, getConfiguredProvider, getAllProviders } from "./providers
 import "./providers/cogview";
 import "./providers/dalle";
 import "./providers/stability";
+import "./providers/replicate";

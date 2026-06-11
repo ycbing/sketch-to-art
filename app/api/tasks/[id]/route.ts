@@ -24,6 +24,17 @@ export async function GET(
       return NextResponse.json({ error: "无权访问此任务" }, { status: 403 });
     }
 
+    // Convert COS URLs to proxy URLs for private buckets
+    if (task.resultUrls) {
+      task.resultUrls = task.resultUrls.map((url: string) => {
+        if (url.includes('.cos.')) {
+          const match = url.match(/myqcloud\.com\/(.+)$/);
+          if (match) return `/api/uploads/cos/${match[1]}`;
+        }
+        return url;
+      });
+    }
+
     return NextResponse.json(task);
   } catch (error) {
     console.error("Get task error:", error);

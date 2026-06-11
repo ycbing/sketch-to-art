@@ -31,7 +31,7 @@ async function describeSketch(sketchBase64: string): Promise<string> {
             },
             {
               type: "text",
-              text: "请详细描述这幅草图中画了什么内容，包括主体、构图、位置、大致形状和颜色。用中文描述，200字以内。",
+              text: "Describe this sketch in detail in English. Include: (1) What objects/figures are drawn, their exact positions (center, left, right, top, bottom), sizes, and shapes. (2) The overall composition and layout. (3) Colors or shading used. (4) Any text, arrows, or labels. Be precise about spatial arrangement - this description will be used to recreate the SAME composition as a finished artwork. 150 words max.",
             },
           ],
         },
@@ -69,11 +69,11 @@ registerProvider({
     }
 
     const sketchContext = sketchDescription
-      ? `The sketch contains: ${sketchDescription}. Create a finished artwork based on this sketch. `
+      ? `Based on this sketch description: "${sketchDescription}"\n\nIMPORTANT: Create an artwork that EXACTLY follows this composition. The position, size, and arrangement of elements must match the original sketch description exactly. Do NOT change the layout, do NOT add new major elements, and do NOT remove any elements.`
       : "";
 
     const fullPrompt = sketchBase64
-      ? `${sketchContext}Art style: ${stylePrompt}. ${prompt || ""}. Maintain the composition and layout of the original sketch but render it fully in the target style with professional quality.`
+      ? `${sketchContext}\n\nRender this composition in the following art style: ${stylePrompt}. ${prompt || ""}. Professional quality, detailed rendering.`.trim()
       : `${stylePrompt}. ${prompt}`;
 
     const res = await fetch(`${GLM_BASE_URL}/images/generations`, {

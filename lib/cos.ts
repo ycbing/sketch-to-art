@@ -94,6 +94,21 @@ export async function uploadUrlToCos(
 }
 
 /**
+ * Convert a COS URL to a proxy URL that works for private buckets.
+ * External URLs are returned as-is.
+ */
+export function toImgUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  if (url.includes(".cos.")) {
+    const match = url.match(/myqcloud\.com\/(.+)$/);
+    if (match) {
+      return `/api/uploads/cos/${match[1]}`;
+    }
+  }
+  return url;
+}
+
+/**
  * Delete an object from COS.
  */
 export function deleteFromCos(cosKey: string): Promise<void> {
