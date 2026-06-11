@@ -24,21 +24,19 @@ export function Header() {
           </span>
         </Link>
 
+        {/* Desktop nav: real routes only */}
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-          <Link href="/#features" className="text-muted-foreground hover:text-foreground transition-colors">
-            功能
-          </Link>
-          <Link href="/#styles" className="text-muted-foreground hover:text-foreground transition-colors">
-            风格
-          </Link>
-          <Link href="/#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
-            使用方法
-          </Link>
-          <Link href="/pricing" className="text-primary font-semibold hover:text-primary/80 transition-colors">
-            定价
+          <Link href="/create" className="text-muted-foreground hover:text-foreground transition-colors">
+            创作
           </Link>
           <Link href="/gallery" className="text-muted-foreground hover:text-foreground transition-colors">
             画廊
+          </Link>
+          <Link href="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
+            作品
+          </Link>
+          <Link href="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
+            定价
           </Link>
         </nav>
 
@@ -57,11 +55,6 @@ export function Header() {
             <div className="hidden md:flex items-center gap-2">
               <Link href="/create">
                 <Button size="sm" className="btn-brand">开始创作</Button>
-              </Link>
-              <Link href="/dashboard">
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                  我的作品
-                </Button>
               </Link>
               <Button variant="ghost" size="sm" onClick={() => signOut()} className="text-muted-foreground hover:text-foreground">
                 退出
@@ -94,18 +87,27 @@ export function Header() {
       {mobileOpen && (
         <div className="md:hidden border-t bg-background/95 backdrop-blur-xl">
           <div className="px-4 py-3 space-y-2">
-            <Link href="/#features" onClick={() => setMobileOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground">功能</Link>
-            <Link href="/#styles" onClick={() => setMobileOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground">风格</Link>
-            <Link href="/pricing" onClick={() => setMobileOpen(false)} className="block py-2 text-sm font-medium text-primary">定价</Link>
-            <Link href="/gallery" onClick={() => setMobileOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground">画廊</Link>
-            <Link href="/create" onClick={() => setMobileOpen(false)} className="block py-2 text-sm font-medium">开始创作</Link>
+            <Link href="/create" onClick={() => setMobileOpen(false)} className="block py-2 text-sm font-medium">
+              开始创作
+            </Link>
+            <Link href="/gallery" onClick={() => setMobileOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground">
+              画廊
+            </Link>
+            <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground">
+              我的作品
+            </Link>
+            <Link href="/pricing" onClick={() => setMobileOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground">
+              定价
+            </Link>
+            <div className="border-t border-border/50 my-1" />
             {session?.user ? (
-              <>
-                <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground">我的作品</Link>
-                <button onClick={() => signOut()} className="block py-2 text-sm text-muted-foreground hover:text-foreground">退出</button>
-              </>
+              <button onClick={() => signOut()} className="block py-2 text-sm text-muted-foreground hover:text-foreground">
+                退出
+              </button>
             ) : (
-              <Link href="/signin" onClick={() => setMobileOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground">登录 / 注册</Link>
+              <Link href="/signin" onClick={() => setMobileOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground">
+                登录 / 注册
+              </Link>
             )}
           </div>
         </div>
