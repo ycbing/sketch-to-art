@@ -16,11 +16,11 @@ export function DeploySection() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
           <span className="bg-gradient-to-r from-violet-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-            Get Started in Minutes
+            几分钟即可上手
           </span>
         </h2>
         <p className="text-white/50 text-base md:text-lg max-w-xl mx-auto mb-12">
-          Deploy your own SketchToArt instance with one click
+          一键部署属于你的 SketchToArt
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-8">

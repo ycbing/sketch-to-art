@@ -50,7 +50,7 @@ export function Features() {
             ?
           </h2>
           <p className="text-white/50 text-base md:text-lg max-w-xl mx-auto">
-            Everything you need to transform your ideas into visual art
+            将你的创意变成视觉艺术所需的一切工具
           </p>
         </div>
 

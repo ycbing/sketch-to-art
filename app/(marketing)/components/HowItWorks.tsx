@@ -2,20 +2,20 @@ const steps = [
   {
     step: 1,
     icon: '✏️',
-    title: 'Draw Your Sketch',
-    description: 'Pick up your pen and draw anything on the canvas. Simple or complex — anything works.',
+    title: '绘制草图',
+    description: '在画布上自由创作，简单或复杂——任何草图都可以。',
   },
   {
     step: 2,
     icon: '🎨',
-    title: 'Choose a Style',
-    description: 'Select from 12 curated art styles that match your creative vision.',
+    title: '选择风格',
+    description: '从 12 种精心设计的艺术风格中选择，匹配你的创意灵感。',
   },
   {
     step: 3,
     icon: '✨',
-    title: 'AI Magic',
-    description: 'Click generate and watch your sketch transform into a stunning piece of art.',
+    title: 'AI 魔法',
+    description: '点击生成，看着你的草图变成精美艺术品。',
   },
 ];
 
@@ -26,11 +26,11 @@ export function HowItWorks() {
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
             <span className="bg-gradient-to-r from-violet-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-              How It Works
+              使用方法
             </span>
           </h2>
           <p className="text-white/50 text-base md:text-lg max-w-xl mx-auto">
-            Three simple steps from idea to art
+            只需三步，从灵感到艺术品
           </p>
         </div>
 

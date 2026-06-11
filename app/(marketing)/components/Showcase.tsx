@@ -50,7 +50,7 @@ export function Showcase() {
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
             <span className="bg-gradient-to-r from-violet-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-              From Sketch to Masterpiece
+              从草图到杰作
             </span>
           </h2>
           <p className="text-white/50 text-base md:text-lg max-w-xl mx-auto">
@@ -118,7 +118,7 @@ export function Showcase() {
           <div className="rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.06] p-5 flex items-center justify-center border-dashed hover:border-white/20 transition-colors">
             <div className="text-center text-white/30">
               <div className="text-3xl mb-2">+</div>
-              <p className="text-sm">More styles coming soon</p>
+              <p className="text-sm">更多风格即将上线</p>
             </div>
           </div>
         </div>

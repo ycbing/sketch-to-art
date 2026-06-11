@@ -15,22 +15,20 @@ export function Hero() {
         <div className="text-center max-w-4xl mx-auto">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-sm text-white/70 mb-8">
             <span className="animate-pulse">✨</span>
-            AI-Powered Art Generation
+            AI 驱动的艺术生成
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] mb-6">
-            Transform Your Sketches
+            将你的草图
             <br />
             <span className="bg-gradient-to-r from-violet-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-              into Stunning Art
+              变成精美画作
             </span>
-            <br />
-            with AI
           </h1>
 
           <p className="text-base md:text-lg lg:text-xl text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Draw a simple sketch on the canvas, choose an art style, and let AI
-            turn it into a masterpiece. No design skills needed.
+            在画布上自由绘制草图，选择艺术风格，让 AI 将你的灵感变为艺术品。
+            无需任何绘画基础。
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -38,7 +36,7 @@ export function Hero() {
               href="/create"
               className="group relative inline-flex items-center gap-2 px-8 h-12 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold text-base hover:from-violet-500 hover:to-indigo-500 transition-all shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 hover:scale-[1.02]"
             >
-              Try It Now
+              立即体验
               <svg
                 className="w-4 h-4 group-hover:translate-x-1 transition-transform"
                 fill="none"
@@ -66,7 +64,7 @@ export function Hero() {
           </div>
 
           <p className="text-xs text-white/30 mt-6">
-            Free to use · Open Source · No account required
+            免费使用 · 开源 · 无需注册
           </p>
         </div>
       </div>
